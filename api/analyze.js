@@ -8,8 +8,10 @@ dotenv.config({ path: path.join(import.meta.dirname, "..", ".env"), quiet: true 
 // Retrieve arguments
 const args = {};
 process.argv.slice(2).forEach(arg => {
-  const [key, val] = arg.split("=");
-  if (key && val) {
+  const eqIdx = arg.indexOf("=");
+  if (eqIdx !== -1) {
+    const key = arg.slice(0, eqIdx);
+    const val = arg.slice(eqIdx + 1);
     args[key.replace(/^--/, "")] = val;
   }
 });
@@ -34,7 +36,8 @@ try {
 const mockBatting = {
   "scouted_player": {
     "role": "Batter",
-    "name": "Grassroots Prospect (Aliganj)"
+    "name": "Grassroots Prospect (Aliganj)",
+    "player_style": "Right-hand bat"
   },
   "shot_or_delivery_name": {
     "technical": "Cover Drive",
@@ -75,7 +78,16 @@ const mockBatting = {
     "quality_rating": "Good",
     "scouting_summary": "[DEMO MODE] Promising grassroots batter with exceptional balance and a high elbow during the cover drive. Stable head alignment spotted at local Lucknow maidans.",
     "outreach_pitch_hook": "[DEMO MODE] Elite cover drive execution and stable head alignment. Ready for UPCA academy trials.",
-    "actionable_suggestion": "Continue keeping the front shoulder aligned towards the target and hold the follow-through pose longer."
+    "actionable_suggestion": "Continue keeping the front shoulder aligned towards the target and hold the follow-through pose longer.",
+    "key_strengths": [
+      "Stable head position at contact",
+      "High front elbow lead direction",
+      "Excellent weight transfer forward"
+    ],
+    "areas_to_improve": [
+      "Backfoot heel could lift slightly earlier",
+      "Follow-through extension pose duration"
+    ]
   },
   "observations": [
     "Note: This is a simulated analysis because the GEMINI_API_KEY is not configured in your .env file. Add your key to enable real-time Gemini AI talent scouting."
@@ -85,7 +97,8 @@ const mockBatting = {
 const mockBowling = {
   "scouted_player": {
     "role": "Bowler",
-    "name": "Grassroots Prospect (Rajajipuram)"
+    "name": "Grassroots Prospect (Rajajipuram)",
+    "player_style": "Right-arm fast-medium"
   },
   "shot_or_delivery_name": {
     "technical": "Outswinger",
@@ -126,7 +139,16 @@ const mockBowling = {
     "quality_rating": "Good",
     "scouting_summary": "[DEMO MODE] Talented outswing bowler with excellent wrist release. Consistent seam presentation and stable front foot contact.",
     "outreach_pitch_hook": "[DEMO MODE] High-velocity outswing action with clean release mechanics spotted in local nets. Strong candidate for specialized coaching under UPCA.",
-    "actionable_suggestion": "Work on the follow-through momentum to keep the chest facing forward longer after release."
+    "actionable_suggestion": "Work on the follow-through momentum to keep the chest facing forward longer after release.",
+    "key_strengths": [
+      "Consistent upright seam alignment",
+      "Strong front-foot landing brace",
+      "Expressive arm acceleration"
+    ],
+    "areas_to_improve": [
+      "Keep non-bowling arm closer to body",
+      "Smooth out run-up rhythm steps"
+    ]
   },
   "observations": [
     "Note: This is a simulated analysis because the GEMINI_API_KEY is not configured in your .env file. Add your key to enable real-time Gemini AI talent scouting."
@@ -135,7 +157,8 @@ const mockBowling = {
 
 async function run() {
   const apiKey = process.env.GEMINI_API_KEY;
-  const isSample = youtubeUrl && youtubeUrl.includes("mixkit.co");
+  const isSample = (youtubeUrl && (youtubeUrl.includes("mixkit.co") || youtubeUrl.includes("mock-id"))) ||
+                   (videoPath && (videoPath.includes("mixkit.co") || videoPath.includes("mock-id")));
   
   // If API Key is missing or this is a sample video, fallback to Demo Mode
   if (isSample || !apiKey || apiKey.trim() === "" || apiKey.includes("your_") || apiKey.includes("key_here")) {

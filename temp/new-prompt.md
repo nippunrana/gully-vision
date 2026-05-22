@@ -38,7 +38,8 @@ Output the analysis as a single JSON object matching the following schema. Wrap 
 {
   "scouted_player": {
     "role": "string ('Batter' | 'Bowler' | 'Unknown')",
-    "name": "string (name of the player if known, or 'Grassroots Prospect')"
+    "name": "string (name of the player if known, or 'Grassroots Prospect')",
+    "player_style": "string (cricket style, e.g. 'Right-hand bat', 'Left-arm fast', 'Right-arm off-break', 'Left-hand bat', or 'Unknown')"
   },
   "shot_or_delivery_name": {
     "technical": "string (formal coaching name, e.g., 'Cover Drive', 'Outswinger', or 'Unknown')",
@@ -79,7 +80,15 @@ Output the analysis as a single JSON object matching the following schema. Wrap 
     "quality_rating": "string ('Good' | 'Average' | 'Poor' | 'Unknown')",
     "scouting_summary": "string (a professional scout's summary of the player's potential, e.g., 'Promising batter with excellent wristwork and balance. Needs coaching on head alignment during front-foot drive.')",
     "outreach_pitch_hook": "string (a concise, punchy scouting hook highlighting key strengths to pitch to UPCA academy selectors, e.g., 'Elite wrist extension and high-velocity swing path; spotted showing excellent composure in local Lucknow maidans.')",
-    "actionable_suggestion": "string (specific technical adjustment advice, e.g., 'Keep the weight over the front knee to prevent the head from falling off-side.')"
+    "actionable_suggestion": "string (specific technical adjustment advice, e.g., 'Keep the weight over the front knee to prevent the head from falling off-side.')",
+    "key_strengths": [
+      "string (technical strength 1, e.g., 'Stable stance with shoulder aligned to target')",
+      "string (technical strength 2, e.g., 'Excellent bat speed through contact zone')"
+    ],
+    "areas_to_improve": [
+      "string (improvement area 1, e.g., 'Weight transfer slightly late')",
+      "string (improvement area 2, e.g., 'Front elbow could lead more prominently')"
+    ]
   },
   "observations": [
     "string (additional brief biomechanical details or notes)"

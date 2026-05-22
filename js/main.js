@@ -16,6 +16,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const dropzoneState = document.getElementById('dropzone-state');
   const scoutFlow = document.getElementById('scout-flow');
   const scoutResults = document.getElementById('scout-results');
+  const mediaContainer = document.getElementById('media-container');
+  const heroGrid = document.querySelector('.hero__grid');
+  const heroCopyColumn = document.getElementById('hero-copy-column');
+  
+  // Selector State Elements
+  const selectorState = document.getElementById('selector-state');
+  const selectorVideoPreview = document.getElementById('selector-video-preview');
+  const selectorYoutubePlaceholder = document.getElementById('selector-youtube-placeholder');
+  const selectorYoutubeHudText = document.getElementById('selector-youtube-hud-text');
+  const clipStartSlider = document.getElementById('clip-start-slider');
+  const clipStartVal = document.getElementById('clip-start-val');
+  const clipRangeDisplay = document.getElementById('clip-range-display');
+  const selectorBackBtn = document.getElementById('selector-back-btn');
+  const selectorAnalyzeBtn = document.getElementById('selector-analyze-btn');
+  
+  // Dashboard Section
+  const analysisDashboard = document.getElementById('analysis-dashboard');
   
   // Interactive Elements
   const videoPreview = document.getElementById('video-preview');
@@ -38,6 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let analysisInterval = null;
   let currentFile = null;
+  let selectedStart = 0;
+  let videoDuration = 12;
+  let loadedSource = null;
+  let loadedType = 'batting';
 
   // Tab Switching Logic
   if (tabLocal && tabYoutube) {
@@ -116,18 +137,35 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       const type = btn.getAttribute('data-type');
       const videoSrc = btn.getAttribute('data-video');
-      
-      // Let the backend download and process the sample URL
-      startRealAnalysis(videoSrc, type);
+      showSelectorView(videoSrc, type);
     });
   });
 
   // Handle resetting flow
-  resetBtn.addEventListener('click', resetToUpload);
-  cancelBtn.addEventListener('click', () => {
-    if (analysisInterval) clearInterval(analysisInterval);
-    resetToUpload();
-  });
+  if (resetBtn) resetBtn.addEventListener('click', resetToUpload);
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      if (analysisInterval) clearInterval(analysisInterval);
+      resetToUpload();
+    });
+  }
+
+  // Selector Action Button Handlers
+  if (clipStartSlider) {
+    clipStartSlider.addEventListener('input', (e) => {
+      updateRangeDisplay(e.target.value);
+    });
+  }
+
+  if (selectorBackBtn) {
+    selectorBackBtn.addEventListener('click', resetToUpload);
+  }
+
+  if (selectorAnalyzeBtn) {
+    selectorAnalyzeBtn.addEventListener('click', () => {
+      startRealAnalysis(loadedSource, loadedType);
+    });
+  }
 
   // Process local file input
   function handleVideoInput(file) {
@@ -145,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
       detectedType = 'bowling';
     }
     
-    startRealAnalysis(file, detectedType);
+    showSelectorView(file, detectedType);
   }
 
   // Process YouTube URL input
@@ -157,15 +195,94 @@ document.addEventListener('DOMContentLoaded', () => {
       detectedType = 'bowling';
     }
     
-    startRealAnalysis(url, detectedType);
+    showSelectorView(url, detectedType);
+  }
+
+  // Trimmer segment selector helpers
+  function showSelectorView(source, type) {
+    loadedSource = source;
+    loadedType = type;
+    selectedStart = 0;
+    
+    // Hide upload tabs and dropzone state
+    if (tabLocal && tabLocal.parentNode) tabLocal.parentNode.style.display = 'none';
+    if (dropzoneState) dropzoneState.style.display = 'none';
+    if (selectorState) selectorState.style.display = 'block';
+    
+    const isUrl = typeof source === 'string';
+    const isYoutube = isUrl && (source.includes('youtube.com') || source.includes('youtu.be') || source.includes('mock-id'));
+    
+    if (isYoutube) {
+      if (selectorVideoPreview) selectorVideoPreview.style.display = 'none';
+      if (selectorYoutubePlaceholder) selectorYoutubePlaceholder.style.display = 'flex';
+      if (selectorYoutubeHudText) selectorYoutubeHudText.textContent = source;
+      
+      videoDuration = 60;
+      if (clipStartSlider) {
+        clipStartSlider.max = 48; // Max start is 48s for a 12s window out of 60s
+        clipStartSlider.value = 0;
+      }
+      updateRangeDisplay(0);
+    } else {
+      if (selectorVideoPreview) selectorVideoPreview.style.display = 'block';
+      if (selectorYoutubePlaceholder) selectorYoutubePlaceholder.style.display = 'none';
+      
+      const srcUrl = isUrl ? source : URL.createObjectURL(source);
+      if (selectorVideoPreview) {
+        selectorVideoPreview.src = srcUrl;
+        selectorVideoPreview.load();
+        
+        selectorVideoPreview.onloadedmetadata = () => {
+          videoDuration = selectorVideoPreview.duration || 12;
+          const maxStart = Math.max(0, videoDuration - 12);
+          if (clipStartSlider) {
+            clipStartSlider.max = maxStart;
+            clipStartSlider.value = 0;
+          }
+          updateRangeDisplay(0);
+        };
+        
+        selectorVideoPreview.play().catch(() => {});
+      }
+    }
+  }
+
+  function updateRangeDisplay(startVal) {
+    selectedStart = parseFloat(startVal);
+    if (clipStartVal) clipStartVal.textContent = `${selectedStart.toFixed(1)}s`;
+    
+    const endVal = selectedStart + 12;
+    if (clipRangeDisplay) {
+      clipRangeDisplay.textContent = `${selectedStart.toFixed(1)}s - ${endVal.toFixed(1)}s`;
+    }
+    
+    if (selectorVideoPreview && selectorVideoPreview.style.display !== 'none') {
+      selectorVideoPreview.currentTime = selectedStart;
+    }
   }
 
   // Visual layout toggles
   function showFlowState() {
-    dropzoneState.style.display = 'none';
-    scoutFlow.classList.add('active');
-    scoutResults.classList.remove('active');
-    scoutFlow.classList.add('analyzing');
+    // Hide selector state
+    if (selectorState) selectorState.style.display = 'none';
+    
+    // Show analysis dashboard and media container/flow logs
+    if (analysisDashboard) analysisDashboard.style.display = 'block';
+    if (mediaContainer) mediaContainer.style.display = 'block';
+    if (scoutFlow) {
+      scoutFlow.style.display = 'block';
+      scoutFlow.classList.add('active');
+      scoutFlow.classList.add('analyzing');
+    }
+    if (scoutResults) {
+      scoutResults.style.display = 'none';
+      scoutResults.classList.remove('active');
+    }
+    
+    // Smooth scroll down to analysis dashboard
+    if (analysisDashboard) {
+      analysisDashboard.scrollIntoView({ behavior: 'smooth' });
+    }
     
     // Clear logs
     logContainer.innerHTML = '';
@@ -174,15 +291,37 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function resetToUpload() {
-    scoutFlow.classList.remove('active');
-    scoutFlow.classList.remove('analyzing');
-    scoutResults.classList.remove('active');
-    dropzoneState.style.display = 'block';
+    // Hide analysis dashboard
+    if (analysisDashboard) analysisDashboard.style.display = 'none';
+    if (scoutFlow) {
+      scoutFlow.style.display = 'none';
+      scoutFlow.classList.remove('active');
+      scoutFlow.classList.remove('analyzing');
+    }
+    if (scoutResults) {
+      scoutResults.style.display = 'none';
+      scoutResults.classList.remove('active');
+    }
+    if (mediaContainer) mediaContainer.style.display = 'none';
+    
+    // Reset selector preview video
+    if (selectorVideoPreview) {
+      selectorVideoPreview.pause();
+      selectorVideoPreview.src = '';
+    }
+    
+    // Reset upload elements
+    if (selectorState) selectorState.style.display = 'none';
+    if (tabLocal && tabLocal.parentNode) tabLocal.parentNode.style.display = 'flex';
+    if (dropzoneState) dropzoneState.style.display = 'block';
     
     // Reset video player
-    videoPreview.style.display = 'block';
-    videoPreview.pause();
-    videoPreview.src = '';
+    if (videoPreview) {
+      videoPreview.style.display = 'block';
+      videoPreview.pause();
+      videoPreview.src = '';
+      videoPreview.ontimeupdate = null;
+    }
     
     // Reset YouTube placeholder
     const ytPlaceholder = document.getElementById('youtube-preview-placeholder');
@@ -191,17 +330,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (analysisInterval) clearInterval(analysisInterval);
     currentFile = null;
     if (fileInput) fileInput.value = '';
+    
+    // Scroll back to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // Real API calling and progress bar coordination
   function startRealAnalysis(source, type) {
     const isUrl = typeof source === 'string';
+    const isYoutube = isUrl && (source.includes('youtube.com') || source.includes('youtu.be') || source.includes('mock-id'));
     
     // Show flow state UI
     showFlowState();
     
     // Setup player view HUD
-    if (isUrl) {
+    if (isYoutube) {
       // Hide video tag and show nice graphic placeholder for URL stream
       videoPreview.style.display = 'none';
       let ytPlaceholder = document.getElementById('youtube-preview-placeholder');
@@ -225,15 +368,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const hudText = document.getElementById('youtube-url-hud-text');
       if (hudText) hudText.textContent = source;
     } else {
-      // Local file preview play
+      // Local file or direct video URL preview play
       videoPreview.style.display = 'block';
       const ytPlaceholder = document.getElementById('youtube-preview-placeholder');
       if (ytPlaceholder) ytPlaceholder.style.display = 'none';
       
-      const objectURL = URL.createObjectURL(source);
-      videoPreview.src = objectURL;
+      const srcUrl = typeof source === 'string' ? source : URL.createObjectURL(source);
+      videoPreview.src = srcUrl;
       videoPreview.load();
+      videoPreview.currentTime = selectedStart;
       videoPreview.play().catch(() => {});
+      
+      // Keep video looping within the 12-second window
+      videoPreview.ontimeupdate = () => {
+        if (videoPreview.currentTime >= selectedStart + 12 || videoPreview.currentTime < selectedStart) {
+          videoPreview.currentTime = selectedStart;
+        }
+      };
     }
 
     // Interactive progress logger timeline
@@ -242,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pipelineLogs = [
       { progress: 2, text: "Initializing Gully-Vision Video Pipeline..." },
       { progress: 10, text: "Routing request to secure PHP gateway..." },
-      { progress: 20, text: isUrl ? "Downloading remote video stream payload..." : "Uploading local media chunks to Google File API..." },
+      { progress: 20, text: isYoutube ? "Initiating remote video transcoding..." : "Uploading local media chunks to Google File API..." },
       { progress: 38, text: "Verifying video format metadata & duration..." },
       { progress: 50, text: "Spawning Gemini 3.5 Flash Scouting Agent..." },
       { progress: 65, text: "Extracting biomechanical joint tracking landmarks..." },
@@ -276,9 +427,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 120);
 
     // Call frontend API client
-    const apiCall = isUrl 
+    const apiCall = isYoutube 
       ? window.GullyVisionAPI.analyzeYoutubeUrl(source, type)
-      : window.GullyVisionAPI.analyzeVideoFile(source, type);
+      : (typeof source === 'string' 
+          ? window.GullyVisionAPI.analyzeYoutubeUrl(source, type) // Treat remote sample URLs same as direct links
+          : window.GullyVisionAPI.analyzeVideoFile(source, type));
 
     apiCall.then((data) => {
       clearInterval(analysisInterval);
@@ -316,13 +469,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Display resulting scorecard from real API response
   function showRealResults(data) {
-    scoutFlow.classList.remove('analyzing');
-    scoutFlow.classList.remove('active');
-    scoutResults.classList.add('active');
+    if (scoutFlow) {
+      scoutFlow.style.display = 'none';
+      scoutFlow.classList.remove('analyzing');
+      scoutFlow.classList.remove('active');
+    }
+    if (scoutResults) {
+      scoutResults.style.display = 'flex';
+      scoutResults.classList.add('active');
+    }
+    
+    // Smooth scroll down to analysis dashboard
+    if (analysisDashboard) {
+      analysisDashboard.scrollIntoView({ behavior: 'smooth' });
+    }
     
     // Handle error returned in JSON payload
     if (data.error) {
-      resultTitle.textContent = "Analysis Error";
+      if (resultTitle) resultTitle.textContent = "Analysis Error";
       resultScore.textContent = "--/100";
       verdictStrong.textContent = "Error occurred during analysis.";
       verdictText.textContent = data.error;
@@ -336,6 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const role = (data.scouted_player && data.scouted_player.role) || 'Batter';
     const playerName = (data.scouted_player && data.scouted_player.name) || 'Grassroots Prospect';
+    const playerStyle = (data.scouted_player && data.scouted_player.player_style) || 'Unknown Style';
     const techName = (data.shot_or_delivery_name && data.shot_or_delivery_name.technical) || 'Unknown';
     const colloquialName = (data.shot_or_delivery_name && data.shot_or_delivery_name.colloquial) || 'Unknown';
     
@@ -371,8 +536,15 @@ document.addEventListener('DOMContentLoaded', () => {
       overallScore = Math.round((stance + backlift + execution) / 3);
     }
     
-    resultTitle.textContent = title;
+    // Bind identity fields
+    if (resultTitle) resultTitle.textContent = title;
     resultScore.textContent = `${overallScore}/100`;
+    
+    const playerNameEl = document.getElementById('result-player-name');
+    if (playerNameEl) playerNameEl.textContent = playerName;
+    
+    const playerStyleEl = document.getElementById('result-player-style');
+    if (playerStyleEl) playerStyleEl.textContent = `${role} • ${playerStyle}`;
     
     applyMetricScores(metrics);
     
@@ -383,12 +555,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const suggestion = feedback.actionable_suggestion || '';
     verdictText.textContent = `${summary} ${suggestion}`;
     
+    // Bind detailed biomechanical telemetry fields
+    const setText = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val || 'Unknown';
+    };
+    
+    const bio = data.biomechanics_impact || {};
+    setText('val-trigger', bio.trigger_movement_or_stride);
+    setText('val-head', bio.head_alignment);
+    setText('val-contact', bio.contact_or_release_quality);
+    setText('val-angle', bio.launch_or_release_angle);
+    
+    // Bind delivery analytics fields
+    const deliv = data.delivery_data || {};
+    setText('val-length', deliv.length);
+    setText('val-line', deliv.line);
+    setText('val-deviation', deliv.deviation);
+    
+    // Bind outcome
+    const outcome = data.outcome_stats || {};
+    const controlStatus = outcome.control_status || 'Unknown';
+    const visibleResult = outcome.visible_result || 'Unknown';
+    setText('val-control', `${controlStatus} / ${visibleResult}`);
+    
+    // Bind pitch hook
+    const pitchHook = feedback.outreach_pitch_hook || 'Elite technique spotted in Lucknow nets.';
+    const pitchHookTextEl = document.getElementById('pitch-hook-text');
+    if (pitchHookTextEl) pitchHookTextEl.textContent = `"${pitchHook}"`;
+    
+    // Populate Strengths, Improvements, and Observations lists
+    const populateList = (elementId, items) => {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.innerHTML = '';
+      if (items && Array.isArray(items) && items.length > 0) {
+        items.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          el.appendChild(li);
+        });
+      } else {
+        const li = document.createElement('li');
+        li.textContent = 'None observed';
+        el.appendChild(li);
+      }
+    };
+    
+    populateList('key-strengths-list', feedback.key_strengths || []);
+    populateList('areas-to-improve-list', feedback.areas_to_improve || []);
+    populateList('observations-list', data.observations || []);
+    
     // Bind outreach button to pitch hook dynamically
     const outreachBtn = document.getElementById('outreach-btn');
     if (outreachBtn) {
-      outreachBtn.removeAttribute('onclick');
       outreachBtn.onclick = () => {
-        const pitchHook = feedback.outreach_pitch_hook || 'Elite technique spotted in Lucknow nets.';
         const emailBody = `Respected Selectors,\n\nI would like to recommend ${playerName} for your review. Biomechanical scouting results:\n\nRole: ${role}\nAction: ${techName} (${colloquialName})\nOverall Rating: ${overallScore}/100\n\nScout Pitch:\n"${pitchHook}"\n\nRegards,\nGully-Vision Agent`;
         alert(`Selector Outreach Triggered!\n\nPitch Hook Sent:\n"${pitchHook}"\n\nDraft Email Content:\n\n${emailBody}`);
       };
