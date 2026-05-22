@@ -16,7 +16,8 @@ Key areas of focus:
 1. Categorization: Identify the formal coaching name and popular/colloquial name for the action/shot.
 2. Biomechanical Scoring:
    - For Batting: Score Stance & Balance (0-100), Backlift & Swing (0-100), and Footwork & Execution (0-100).
-   - For Bowling: Score Run-up & Stride (0-100), Release Arm Speed (0-100), and Follow-through (0-100).
+    - For Bowling: Score Run-up & Stride (0-100), Release Arm Speed (0-100), and Follow-through (0-100).
+    - For Fielding: Score Throwing Accuracy (0-100), Ground Coverage (0-100), and Catching Technique (0-100).
 3. Biomechanical Breakdown: Evaluate head alignment, trigger movement, bat path/release angle, and follow-through, grounding these judgments in specific visible cues.
 4. Delivery/Impact Analytics: Estimate delivery line, length, deviation, and contact quality.
 5. Scouting Evaluation: Write a scout's summary/pitch hook highlighting the player's potential, specific strengths, areas for development, and strategic advice.
@@ -37,15 +38,15 @@ Output the analysis as a single JSON object matching the following schema. Wrap 
 ```json
 {
   "scouted_player": {
-    "role": "string ('Batter' | 'Bowler' | 'Unknown')",
+    "role": "string ('Batter' | 'Bowler' | 'Fielder' | 'Unknown')",
     "name": "string (name of the player if known, or 'Grassroots Prospect')",
-    "player_style": "string (cricket style, e.g. 'Right-hand bat', 'Left-arm fast', 'Right-arm off-break', 'Left-hand bat', or 'Unknown')"
+    "player_style": "string (cricket style, e.g. 'Right-hand bat', 'Left-arm fast', 'Right-arm off-break', 'Left-arm throw', or 'Unknown')"
   },
   "shot_or_delivery_name": {
-    "technical": "string (formal coaching name, e.g., 'Cover Drive', 'Outswinger', or 'Unknown')",
-    "colloquial": "string (popular/fan name, e.g., 'Helicopter Shot', 'Doosra', or 'Unknown')"
+    "technical": "string (formal coaching name, e.g., 'Cover Drive', 'Outswinger', 'Direct Hit Pick-up', or 'Unknown')",
+    "colloquial": "string (popular/fan name, e.g., 'Helicopter Shot', 'Doosra', 'Bullet Throw', or 'Unknown')"
   },
-  "direction": "string (field region where ball was hit, e.g., 'Mid-wicket', 'Covers', or 'Unknown' for bowler/non-batting actions)",
+  "direction": "string (field region where ball was hit or throw was directed, e.g., 'Mid-wicket', 'Covers', or 'Unknown')",
   "dashboard_metrics": {
     "batting_scores": {
       "stance_and_balance": "integer (0-100 or null)",
@@ -56,6 +57,11 @@ Output the analysis as a single JSON object matching the following schema. Wrap 
       "run_up_and_stride": "integer (0-100 or null)",
       "release_arm_speed": "integer (0-100 or null)",
       "follow_through": "integer (0-100 or null)"
+    },
+    "fielding_scores": {
+      "throwing_accuracy": "integer (0-100 or null)",
+      "ground_coverage": "integer (0-100 or null)",
+      "catching_technique": "integer (0-100 or null)"
     }
   },
   "biomechanics_impact": {

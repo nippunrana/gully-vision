@@ -9,10 +9,11 @@ class GullyVisionAPI {
    * @param {string} type - The type of player ('batting' or 'bowling').
    * @returns {Promise<Object>} The parsed analysis response.
    */
-  static async analyzeVideoFile(file, type = 'batting') {
+  static async analyzeVideoFile(file, type = 'batting', playerName = 'Grassroots Prospect') {
     const formData = new FormData();
     formData.append('video', file);
     formData.append('type', type);
+    formData.append('player', playerName);
 
     try {
       const response = await fetch('api/analyze.php', {
@@ -36,12 +37,14 @@ class GullyVisionAPI {
    * Sends a YouTube URL for technique analysis.
    * @param {string} url - The YouTube link.
    * @param {string} type - The type of player ('batting' or 'bowling').
+   * @param {string} playerName - The name of the player.
    * @returns {Promise<Object>} The parsed analysis response.
    */
-  static async analyzeYoutubeUrl(url, type = 'batting') {
+  static async analyzeYoutubeUrl(url, type = 'batting', playerName = 'Grassroots Prospect') {
     const formData = new FormData();
     formData.append('youtube_url', url);
     formData.append('type', type);
+    formData.append('player', playerName);
 
     try {
       const response = await fetch('api/analyze.php', {

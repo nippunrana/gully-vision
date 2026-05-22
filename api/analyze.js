@@ -19,6 +19,7 @@ process.argv.slice(2).forEach(arg => {
 const videoPath = args.video;
 const youtubeUrl = args.youtube;
 const analysisType = args.type || "batting";
+const playerNameInput = args.player || "Grassroots Prospect";
 
 // Path configuration relative to script location
 const promptFilePath = path.join(import.meta.dirname, "..", "temp", "new-prompt.md");
@@ -36,7 +37,7 @@ try {
 const mockBatting = {
   "scouted_player": {
     "role": "Batter",
-    "name": "Grassroots Prospect (Aliganj)",
+    "name": playerNameInput,
     "player_style": "Right-hand bat"
   },
   "shot_or_delivery_name": {
@@ -97,7 +98,7 @@ const mockBatting = {
 const mockBowling = {
   "scouted_player": {
     "role": "Bowler",
-    "name": "Grassroots Prospect (Rajajipuram)",
+    "name": playerNameInput,
     "player_style": "Right-arm fast-medium"
   },
   "shot_or_delivery_name": {
@@ -155,6 +156,72 @@ const mockBowling = {
   ]
 };
 
+const mockFielding = {
+  "scouted_player": {
+    "role": "Fielder",
+    "name": playerNameInput,
+    "player_style": "Right-arm throw"
+  },
+  "shot_or_delivery_name": {
+    "technical": "Direct Hit Pick-up",
+    "colloquial": "Bullet Throw"
+  },
+  "direction": "Covers",
+  "dashboard_metrics": {
+    "batting_scores": {
+      "stance_and_balance": null,
+      "backlift_and_swing": null,
+      "footwork_and_execution": null
+    },
+    "bowling_scores": {
+      "run_up_and_stride": null,
+      "release_arm_speed": null,
+      "follow_through": null
+    },
+    "fielding_scores": {
+      "throwing_accuracy": 92,
+      "ground_coverage": 88,
+      "catching_technique": 85
+    }
+  },
+  "biomechanics_impact": {
+    "trigger_movement_or_stride": "Quick pick-up on the run",
+    "head_alignment": "Focused on stumps",
+    "contact_or_release_quality": "Clean release",
+    "launch_or_release_angle": "Flat trajectory",
+    "confidence": 95
+  },
+  "delivery_data": {
+    "length": "Unknown",
+    "line": "Unknown",
+    "deviation": "Straight",
+    "confidence": 90
+  },
+  "outcome_stats": {
+    "control_status": "In Control",
+    "visible_result": "Runs",
+    "confidence": 95
+  },
+  "evaluation_and_feedback": {
+    "quality_rating": "Good",
+    "scouting_summary": "[DEMO MODE] Elite fielding response with clean pick-up and flat, accurate throw back to the keeper's end. Excellent arm power.",
+    "outreach_pitch_hook": "[DEMO MODE] Express fielding speed and bullet arm accuracy. Immediate candidate for regional team trials.",
+    "actionable_suggestion": "Ensure body balance remains centered when throwing on the run to avoid shoulder strain.",
+    "key_strengths": [
+      "Extremely fast ground coverage speed",
+      "High arm-strength throw accuracy",
+      "Clean ball pick-up transition"
+    ],
+    "areas_to_improve": [
+      "Stance stability before throwing when time permits",
+      "Follow-through path towards target stumps"
+    ]
+  },
+  "observations": [
+    "Note: This is a simulated analysis because the GEMINI_API_KEY is not configured in your .env file. Add your key to enable real-time Gemini AI talent scouting."
+  ]
+};
+
 async function run() {
   const apiKey = process.env.GEMINI_API_KEY;
   const isSample = (youtubeUrl && (youtubeUrl.includes("mixkit.co") || youtubeUrl.includes("mock-id"))) ||
@@ -164,9 +231,20 @@ async function run() {
   if (isSample || !apiKey || apiKey.trim() === "" || apiKey.includes("your_") || apiKey.includes("key_here")) {
     // Artificial delay to simulate actual analysis network roundtrip (2 seconds)
     await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log(JSON.stringify(analysisType === "bowling" ? mockBowling : mockBatting, null, 2));
+    let mockResult = mockBatting;
+    if (analysisType === "bowling") mockResult = mockBowling;
+    else if (analysisType === "fielding") mockResult = mockFielding;
+    console.log(JSON.stringify(mockResult, null, 2));
     process.exit(0);
   }
+
+  // Prepend dynamic user instructions to the prompt
+  const prependedInstructions = `<user_instructions>
+- Scouted Player Name: ${playerNameInput} (Always use this name in the "name" field under "scouted_player" instead of a placeholder)
+- Requested Analysis Category: ${analysisType} (Analyze the video specifically for this category: "batting", "bowling", or "fielding")
+</user_instructions>\n\n`;
+
+  const finalPromptText = prependedInstructions + promptText;
 
   // Initialize Gemini client
   const ai = new GoogleGenAI({ apiKey: apiKey });
@@ -183,7 +261,7 @@ async function run() {
             fileUri: youtubeUrl,
           },
         },
-        { text: promptText }
+        { text: finalPromptText }
       ];
 
       response = await ai.models.generateContent({
@@ -221,7 +299,7 @@ async function run() {
         model: "gemini-3.5-flash",
         contents: createUserContent([
           createPartFromUri(activeFile.uri, activeFile.mimeType),
-          promptText,
+          finalPromptText,
         ]),
       });
 

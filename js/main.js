@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const clipStartSlider = document.getElementById('clip-start-slider');
   const clipStartVal = document.getElementById('clip-start-val');
   const clipRangeDisplay = document.getElementById('clip-range-display');
+  const clipDurationSlider = document.getElementById('clip-duration-slider');
+  const clipDurationVal = document.getElementById('clip-duration-val');
+  const clipDurationDisplay = document.getElementById('clip-duration-display');
   const selectorBackBtn = document.getElementById('selector-back-btn');
   const selectorAnalyzeBtn = document.getElementById('selector-analyze-btn');
   
@@ -56,9 +59,105 @@ document.addEventListener('DOMContentLoaded', () => {
   let analysisInterval = null;
   let currentFile = null;
   let selectedStart = 0;
+  let selectedDuration = 12;
   let videoDuration = 12;
   let loadedSource = null;
   let loadedType = 'batting';
+
+  let selectorYTPlayer = null;
+  let dashboardYTPlayer = null;
+  let ytLoopInterval = null;
+
+  // Extract YouTube ID from any standard YouTube URL
+  function getYoutubeId(url) {
+    if (!url) return null;
+    if (url.includes('mock-id')) return 'dQw4w9WgXcQ'; // Neutral fallback
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+
+  // Initialize YouTube Iframe Player
+  function initYoutubePlayer(containerId, videoId, onReady) {
+    const container = document.getElementById(containerId);
+    if (!container) return null;
+
+    container.innerHTML = '';
+    const innerDiv = document.createElement('div');
+    innerDiv.id = containerId + '-inner';
+    container.appendChild(innerDiv);
+
+    const createPlayer = () => {
+      return new YT.Player(innerDiv.id, {
+        height: '100%',
+        width: '100%',
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          rel: 0,
+          showinfo: 0,
+          modestbranding: 1,
+          mute: 1,
+          playsinline: 1
+        },
+        events: {
+          onReady: (event) => {
+            if (onReady) onReady(event.target);
+          }
+        }
+      });
+    };
+
+    if (window.YT && window.YT.Player) {
+      return createPlayer();
+    } else {
+      // If YT API script isn't loaded yet, hook standard callback
+      const existingCallback = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (existingCallback) existingCallback();
+        const activePlayer = createPlayer();
+        if (containerId === 'selector-youtube-player-container') {
+          selectorYTPlayer = activePlayer;
+        } else if (containerId === 'dashboard-youtube-player-container') {
+          dashboardYTPlayer = activePlayer;
+        }
+      };
+      return null;
+    }
+  }
+
+  // Monitor YouTube playback and loop within selected range
+  function startYTLoopChecker(player) {
+    if (ytLoopInterval) clearInterval(ytLoopInterval);
+    
+    ytLoopInterval = setInterval(() => {
+      if (!player || typeof player.getCurrentTime !== 'function') return;
+      
+      let state = -1;
+      try {
+        state = player.getPlayerState();
+      } catch (e) {
+        return;
+      }
+      
+      const currentTime = player.getCurrentTime() || 0;
+      const duration = player.getDuration() || 0;
+      
+      if (player === selectorYTPlayer) {
+        const overlay = document.getElementById('selector-time-overlay');
+        if (overlay) {
+          overlay.textContent = `${currentTime.toFixed(1)}s / ${duration.toFixed(1)}s`;
+        }
+      }
+      
+      if (state === 1) { // PLAYING
+        if (currentTime >= selectedStart + selectedDuration || currentTime < selectedStart) {
+          player.seekTo(selectedStart, true);
+        }
+      }
+    }, 200);
+  }
 
   // Tab Switching Logic
   if (tabLocal && tabYoutube) {
@@ -157,13 +256,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  if (clipDurationSlider) {
+    clipDurationSlider.addEventListener('input', (e) => {
+      selectedDuration = parseFloat(e.target.value);
+      if (clipDurationVal) clipDurationVal.textContent = `${selectedDuration.toFixed(1)}s`;
+      if (clipDurationDisplay) clipDurationDisplay.textContent = `${selectedDuration.toFixed(1)}s`;
+      
+      const maxStart = Math.max(0, videoDuration - selectedDuration);
+      if (clipStartSlider) {
+        clipStartSlider.max = maxStart;
+        if (parseFloat(clipStartSlider.value) > maxStart) {
+          clipStartSlider.value = maxStart;
+          selectedStart = maxStart;
+        }
+      }
+      updateRangeDisplay(selectedStart);
+    });
+  }
+
+  if (selectorVideoPreview) {
+    selectorVideoPreview.addEventListener('timeupdate', () => {
+      const currentTime = selectorVideoPreview.currentTime || 0;
+      const duration = selectorVideoPreview.duration || 0;
+      const overlay = document.getElementById('selector-time-overlay');
+      if (overlay) {
+        overlay.textContent = `${currentTime.toFixed(1)}s / ${duration.toFixed(1)}s`;
+      }
+    });
+  }
+
   if (selectorBackBtn) {
     selectorBackBtn.addEventListener('click', resetToUpload);
   }
 
   if (selectorAnalyzeBtn) {
     selectorAnalyzeBtn.addEventListener('click', () => {
-      startRealAnalysis(loadedSource, loadedType);
+      const nameInput = document.getElementById('player-name-input');
+      const categorySelect = document.getElementById('analysis-category-select');
+      const playerName = nameInput ? nameInput.value.trim() : 'Grassroots Prospect';
+      const targetCategory = categorySelect ? categorySelect.value : loadedType;
+      
+      startRealAnalysis(loadedSource, targetCategory, playerName);
     });
   }
 
@@ -203,7 +336,14 @@ document.addEventListener('DOMContentLoaded', () => {
     loadedSource = source;
     loadedType = type;
     selectedStart = 0;
+    selectedDuration = 12;
     
+    if (clipDurationSlider) {
+      clipDurationSlider.value = 12;
+    }
+    if (clipDurationVal) clipDurationVal.textContent = '12.0s';
+    if (clipDurationDisplay) clipDurationDisplay.textContent = '12.0s';
+
     // Hide upload tabs and dropzone state
     if (tabLocal && tabLocal.parentNode) tabLocal.parentNode.style.display = 'none';
     if (dropzoneState) dropzoneState.style.display = 'none';
@@ -212,20 +352,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const isUrl = typeof source === 'string';
     const isYoutube = isUrl && (source.includes('youtube.com') || source.includes('youtu.be') || source.includes('mock-id'));
     
+    const selectorYtContainer = document.getElementById('selector-youtube-player-container');
+    
     if (isYoutube) {
       if (selectorVideoPreview) selectorVideoPreview.style.display = 'none';
-      if (selectorYoutubePlaceholder) selectorYoutubePlaceholder.style.display = 'flex';
-      if (selectorYoutubeHudText) selectorYoutubeHudText.textContent = source;
+      if (selectorYoutubePlaceholder) selectorYoutubePlaceholder.style.display = 'none';
+      if (selectorYtContainer) selectorYtContainer.style.display = 'block';
       
-      videoDuration = 60;
-      if (clipStartSlider) {
-        clipStartSlider.max = 48; // Max start is 48s for a 12s window out of 60s
-        clipStartSlider.value = 0;
+      const videoId = getYoutubeId(source) || 'dQw4w9WgXcQ';
+      
+      if (selectorYTPlayer && typeof selectorYTPlayer.destroy === 'function') {
+        try { selectorYTPlayer.destroy(); } catch (e) {}
+        selectorYTPlayer = null;
       }
-      updateRangeDisplay(0);
+
+      selectorYTPlayer = initYoutubePlayer('selector-youtube-player-container', videoId, (player) => {
+        videoDuration = player.getDuration() || 60;
+        const maxStart = Math.max(0, videoDuration - selectedDuration);
+        if (clipStartSlider) {
+          clipStartSlider.max = maxStart;
+          clipStartSlider.value = 0;
+        }
+        updateRangeDisplay(0);
+        startYTLoopChecker(player);
+      });
+      
+      if (!selectorYTPlayer) {
+        videoDuration = 60;
+        if (clipStartSlider) {
+          clipStartSlider.max = Math.max(0, videoDuration - selectedDuration);
+          clipStartSlider.value = 0;
+        }
+        updateRangeDisplay(0);
+      }
     } else {
       if (selectorVideoPreview) selectorVideoPreview.style.display = 'block';
       if (selectorYoutubePlaceholder) selectorYoutubePlaceholder.style.display = 'none';
+      if (selectorYtContainer) selectorYtContainer.style.display = 'none';
       
       const srcUrl = isUrl ? source : URL.createObjectURL(source);
       if (selectorVideoPreview) {
@@ -234,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         selectorVideoPreview.onloadedmetadata = () => {
           videoDuration = selectorVideoPreview.duration || 12;
-          const maxStart = Math.max(0, videoDuration - 12);
+          const maxStart = Math.max(0, videoDuration - selectedDuration);
           if (clipStartSlider) {
             clipStartSlider.max = maxStart;
             clipStartSlider.value = 0;
@@ -251,22 +414,61 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedStart = parseFloat(startVal);
     if (clipStartVal) clipStartVal.textContent = `${selectedStart.toFixed(1)}s`;
     
-    const endVal = selectedStart + 12;
+    const endVal = selectedStart + selectedDuration;
     if (clipRangeDisplay) {
       clipRangeDisplay.textContent = `${selectedStart.toFixed(1)}s - ${endVal.toFixed(1)}s`;
+    }
+    
+    const overlay = document.getElementById('selector-time-overlay');
+    if (overlay && selectorVideoPreview && selectorVideoPreview.style.display !== 'none') {
+      overlay.textContent = `${selectedStart.toFixed(1)}s / ${(selectorVideoPreview.duration || 0).toFixed(1)}s`;
+    } else if (overlay && selectorYTPlayer && typeof selectorYTPlayer.getCurrentTime === 'function') {
+      try {
+        overlay.textContent = `${selectedStart.toFixed(1)}s / ${(selectorYTPlayer.getDuration() || 0).toFixed(1)}s`;
+      } catch (e) {}
     }
     
     if (selectorVideoPreview && selectorVideoPreview.style.display !== 'none') {
       selectorVideoPreview.currentTime = selectedStart;
     }
+    
+    if (selectorYTPlayer && typeof selectorYTPlayer.seekTo === 'function') {
+      try {
+        selectorYTPlayer.seekTo(selectedStart, true);
+      } catch (e) {}
+    }
   }
 
   // Visual layout toggles
-  function showFlowState() {
-    // Hide selector state
+  function resetUploadCardOnly() {
     if (selectorState) selectorState.style.display = 'none';
+    if (tabLocal && tabLocal.parentNode) tabLocal.parentNode.style.display = 'flex';
+    if (dropzoneState) dropzoneState.style.display = 'block';
     
-    // Show analysis dashboard and media container/flow logs
+    if (selectorVideoPreview) {
+      selectorVideoPreview.pause();
+      selectorVideoPreview.src = '';
+    }
+    
+    const selectorYtContainer = document.getElementById('selector-youtube-player-container');
+    if (selectorYtContainer) selectorYtContainer.style.display = 'none';
+    
+    if (selectorYTPlayer && typeof selectorYTPlayer.destroy === 'function') {
+      try { selectorYTPlayer.destroy(); } catch (e) {}
+      selectorYTPlayer = null;
+    }
+    
+    if (ytLoopInterval) {
+      clearInterval(ytLoopInterval);
+      ytLoopInterval = null;
+    }
+    
+    if (fileInput) fileInput.value = '';
+  }
+
+  function showFlowState() {
+    resetUploadCardOnly();
+    
     if (analysisDashboard) analysisDashboard.style.display = 'block';
     if (mediaContainer) mediaContainer.style.display = 'block';
     if (scoutFlow) {
@@ -279,19 +481,23 @@ document.addEventListener('DOMContentLoaded', () => {
       scoutResults.classList.remove('active');
     }
     
-    // Smooth scroll down to analysis dashboard
     if (analysisDashboard) {
       analysisDashboard.scrollIntoView({ behavior: 'smooth' });
     }
     
-    // Clear logs
     logContainer.innerHTML = '';
     progressBarFill.style.width = '0%';
     progressPct.textContent = '0%';
   }
 
   function resetToUpload() {
-    // Hide analysis dashboard
+    selectedDuration = 12;
+    if (clipDurationSlider) {
+      clipDurationSlider.value = 12;
+    }
+    if (clipDurationVal) clipDurationVal.textContent = '12.0s';
+    if (clipDurationDisplay) clipDurationDisplay.textContent = '12.0s';
+
     if (analysisDashboard) analysisDashboard.style.display = 'none';
     if (scoutFlow) {
       scoutFlow.style.display = 'none';
@@ -304,18 +510,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (mediaContainer) mediaContainer.style.display = 'none';
     
-    // Reset selector preview video
     if (selectorVideoPreview) {
       selectorVideoPreview.pause();
       selectorVideoPreview.src = '';
     }
     
-    // Reset upload elements
+    const selectorYtContainer = document.getElementById('selector-youtube-player-container');
+    if (selectorYtContainer) selectorYtContainer.style.display = 'none';
+    
+    if (selectorYTPlayer && typeof selectorYTPlayer.destroy === 'function') {
+      try { selectorYTPlayer.destroy(); } catch (e) {}
+      selectorYTPlayer = null;
+    }
+    
+    const dashboardYtContainer = document.getElementById('dashboard-youtube-player-container');
+    if (dashboardYtContainer) dashboardYtContainer.style.display = 'none';
+    
+    if (dashboardYTPlayer && typeof dashboardYTPlayer.destroy === 'function') {
+      try { dashboardYTPlayer.destroy(); } catch (e) {}
+      dashboardYTPlayer = null;
+    }
+    
+    if (ytLoopInterval) {
+      clearInterval(ytLoopInterval);
+      ytLoopInterval = null;
+    }
+    
     if (selectorState) selectorState.style.display = 'none';
     if (tabLocal && tabLocal.parentNode) tabLocal.parentNode.style.display = 'flex';
     if (dropzoneState) dropzoneState.style.display = 'block';
     
-    // Reset video player
     if (videoPreview) {
       videoPreview.style.display = 'block';
       videoPreview.pause();
@@ -323,7 +547,6 @@ document.addEventListener('DOMContentLoaded', () => {
       videoPreview.ontimeupdate = null;
     }
     
-    // Reset YouTube placeholder
     const ytPlaceholder = document.getElementById('youtube-preview-placeholder');
     if (ytPlaceholder) ytPlaceholder.style.display = 'none';
     
@@ -331,44 +554,38 @@ document.addEventListener('DOMContentLoaded', () => {
     currentFile = null;
     if (fileInput) fileInput.value = '';
     
-    // Scroll back to top smoothly
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // Real API calling and progress bar coordination
-  function startRealAnalysis(source, type) {
+  function startRealAnalysis(source, type, playerName = 'Grassroots Prospect') {
     const isUrl = typeof source === 'string';
     const isYoutube = isUrl && (source.includes('youtube.com') || source.includes('youtu.be') || source.includes('mock-id'));
     
-    // Show flow state UI
     showFlowState();
     
-    // Setup player view HUD
+    const dashboardYtContainer = document.getElementById('dashboard-youtube-player-container');
+    
     if (isYoutube) {
-      // Hide video tag and show nice graphic placeholder for URL stream
-      videoPreview.style.display = 'none';
-      let ytPlaceholder = document.getElementById('youtube-preview-placeholder');
-      if (!ytPlaceholder) {
-        ytPlaceholder = document.createElement('div');
-        ytPlaceholder.id = 'youtube-preview-placeholder';
-        ytPlaceholder.className = 'youtube-preview-placeholder';
-        ytPlaceholder.innerHTML = `
-          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px; padding: 20px; text-align: center;">
-            <svg fill="currentColor" viewBox="0 0 24 24" width="48" height="48" style="color: #ff0000; filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.45));">
-              <path d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-            </svg>
-            <span style="font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--color-text-secondary);">Streaming Video Target</span>
-            <span style="font-family: monospace; font-size: 9px; color: var(--color-text-muted); word-break: break-all;" id="youtube-url-hud-text"></span>
-          </div>
-        `;
-        ytPlaceholder.style.cssText = "position: absolute; inset: 0; background: #000; z-index: 1;";
-        videoPreview.parentNode.appendChild(ytPlaceholder);
+      if (videoPreview) videoPreview.style.display = 'none';
+      const ytPlaceholder = document.getElementById('youtube-preview-placeholder');
+      if (ytPlaceholder) ytPlaceholder.style.display = 'none';
+      if (dashboardYtContainer) dashboardYtContainer.style.display = 'block';
+      
+      const videoId = getYoutubeId(source) || 'dQw4w9WgXcQ';
+      
+      if (dashboardYTPlayer && typeof dashboardYTPlayer.destroy === 'function') {
+        try { dashboardYTPlayer.destroy(); } catch (e) {}
+        dashboardYTPlayer = null;
       }
-      ytPlaceholder.style.display = 'block';
-      const hudText = document.getElementById('youtube-url-hud-text');
-      if (hudText) hudText.textContent = source;
+      
+      dashboardYTPlayer = initYoutubePlayer('dashboard-youtube-player-container', videoId, (player) => {
+        player.seekTo(selectedStart, true);
+        player.playVideo();
+        startYTLoopChecker(player);
+      });
     } else {
-      // Local file or direct video URL preview play
+      if (dashboardYtContainer) dashboardYtContainer.style.display = 'none';
       videoPreview.style.display = 'block';
       const ytPlaceholder = document.getElementById('youtube-preview-placeholder');
       if (ytPlaceholder) ytPlaceholder.style.display = 'none';
@@ -379,9 +596,8 @@ document.addEventListener('DOMContentLoaded', () => {
       videoPreview.currentTime = selectedStart;
       videoPreview.play().catch(() => {});
       
-      // Keep video looping within the 12-second window
       videoPreview.ontimeupdate = () => {
-        if (videoPreview.currentTime >= selectedStart + 12 || videoPreview.currentTime < selectedStart) {
+        if (videoPreview.currentTime >= selectedStart + selectedDuration || videoPreview.currentTime < selectedStart) {
           videoPreview.currentTime = selectedStart;
         }
       };
@@ -428,10 +644,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Call frontend API client
     const apiCall = isYoutube 
-      ? window.GullyVisionAPI.analyzeYoutubeUrl(source, type)
+      ? window.GullyVisionAPI.analyzeYoutubeUrl(source, type, playerName)
       : (typeof source === 'string' 
-          ? window.GullyVisionAPI.analyzeYoutubeUrl(source, type) // Treat remote sample URLs same as direct links
-          : window.GullyVisionAPI.analyzeVideoFile(source, type));
+          ? window.GullyVisionAPI.analyzeYoutubeUrl(source, type, playerName) // Treat remote sample URLs same as direct links
+          : window.GullyVisionAPI.analyzeVideoFile(source, type, playerName));
 
     apiCall.then((data) => {
       clearInterval(analysisInterval);
@@ -443,6 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       setTimeout(() => {
         showRealResults(data);
+        loadLeaderboard();
       }, 700);
     }).catch((err) => {
       clearInterval(analysisInterval);
@@ -521,6 +738,19 @@ document.addEventListener('DOMContentLoaded', () => {
         { label: "Follow-through", score: follow }
       ];
       overallScore = Math.round((runUp + armSpeed + follow) / 3);
+    } else if (role === 'Fielder') {
+      title = "Fielding Technique Profile";
+      const fieldingScores = (data.dashboard_metrics && data.dashboard_metrics.fielding_scores) || {};
+      const throwing = fieldingScores.throwing_accuracy !== null ? fieldingScores.throwing_accuracy : 80;
+      const coverage = fieldingScores.ground_coverage !== null ? fieldingScores.ground_coverage : 80;
+      const catching = fieldingScores.catching_technique !== null ? fieldingScores.catching_technique : 80;
+      
+      metrics = [
+        { label: "Throwing Accuracy", score: throwing },
+        { label: "Ground Coverage", score: coverage },
+        { label: "Catching Technique", score: catching }
+      ];
+      overallScore = Math.round((throwing + coverage + catching) / 3);
     } else {
       title = "Batting Technique Profile";
       const battingScores = (data.dashboard_metrics && data.dashboard_metrics.batting_scores) || {};
@@ -641,5 +871,89 @@ document.addEventListener('DOMContentLoaded', () => {
       navMenu.classList.toggle('nav__menu--open');
     });
   }
+
+  // Leaderboard Initialisation and Binding
+  const ctaViewDashboard = document.getElementById('cta-view-dashboard');
+  const leaderboardSection = document.getElementById('leaderboard-section');
+  const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+  
+  if (ctaViewDashboard) {
+    ctaViewDashboard.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (leaderboardSection) {
+        leaderboardSection.style.display = 'block';
+        loadLeaderboard();
+        leaderboardSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+  
+  if (closeLeaderboardBtn) {
+    closeLeaderboardBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        if (leaderboardSection) leaderboardSection.style.display = 'none';
+      }, 600);
+    });
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function loadLeaderboard() {
+    fetch('api/leaderboard.php')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.getElementById('leaderboard-rows');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        
+        if (!data || data.length === 0 || data.error) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="padding: var(--space-6); text-align: center; color: var(--color-text-muted);">No players scouted yet. Be the first to analyze!</td>
+            </tr>
+          `;
+          return;
+        }
+        
+        data.forEach((row, index) => {
+          const tr = document.createElement('tr');
+          tr.style.cssText = "border-bottom: 1px solid var(--color-border-glass); font-size: var(--text-sm); color: #fff; transition: background 0.2s;";
+          tr.addEventListener('mouseenter', () => tr.style.background = 'hsla(140, 100%, 10%, 0.15)');
+          tr.addEventListener('mouseleave', () => tr.style.background = 'transparent');
+          
+          let medal = index + 1;
+          if (index === 0) medal = '🥇';
+          else if (index === 1) medal = '🥈';
+          else if (index === 2) medal = '🥉';
+          
+          const ratingColor = row.overall_score >= 85 ? 'var(--color-green)' : (row.overall_score >= 70 ? 'var(--color-gold)' : 'var(--color-text-secondary)');
+          
+          tr.innerHTML = `
+            <td style="padding: var(--space-4); font-weight: bold; font-size: var(--text-base);">${medal}</td>
+            <td style="padding: var(--space-4); font-weight: 600;">${escapeHtml(row.player_name)}</td>
+            <td style="padding: var(--space-4);"><span class="badge" style="background: hsla(220, 20%, 20%, 0.6);">${escapeHtml(row.role)}</span></td>
+            <td style="padding: var(--space-4); color: var(--color-text-secondary);">${escapeHtml(row.technique_name)}</td>
+            <td style="padding: var(--space-4); text-align: right; font-weight: bold; color: ${ratingColor};">${row.overall_score}/100</td>
+            <td style="padding: var(--space-4); color: var(--color-text-muted); font-size: var(--text-xs);">${new Date(row.scouted_at).toLocaleDateString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        console.error("Failed to load leaderboard:", err);
+      });
+  }
+
+  // Pre-load the leaderboard structure
+  loadLeaderboard();
 });
 

@@ -9,8 +9,62 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $analysisType = isset($_POST['type']) ? $_POST['type'] : 'batting';
-if (!in_array($analysisType, ['batting', 'bowling'])) {
+if (!in_array($analysisType, ['batting', 'bowling', 'fielding'])) {
     $analysisType = 'batting';
+}
+$playerName = isset($_POST['player']) ? trim($_POST['player']) : 'Grassroots Prospect';
+if (empty($playerName)) {
+    $playerName = 'Grassroots Prospect';
+}
+
+function saveToLeaderboard($output) {
+    $resultData = json_decode($output, true);
+    if ($resultData && !isset($resultData['error'])) {
+        $name = isset($resultData['scouted_player']['name']) ? $resultData['scouted_player']['name'] : 'Grassroots Prospect';
+        $role = isset($resultData['scouted_player']['role']) ? $resultData['scouted_player']['role'] : 'Batter';
+        $techName = isset($resultData['shot_or_delivery_name']['technical']) ? $resultData['shot_or_delivery_name']['technical'] : 'Unknown';
+        
+        $overallScore = 80;
+        if ($role === 'Bowler') {
+            $scores = isset($resultData['dashboard_metrics']['bowling_scores']) ? $resultData['dashboard_metrics']['bowling_scores'] : [];
+            $runUp = isset($scores['run_up_and_stride']) && $scores['run_up_and_stride'] !== null ? $scores['run_up_and_stride'] : 80;
+            $armSpeed = isset($scores['release_arm_speed']) && $scores['release_arm_speed'] !== null ? $scores['release_arm_speed'] : 80;
+            $follow = isset($scores['follow_through']) && $scores['follow_through'] !== null ? $scores['follow_through'] : 80;
+            $overallScore = round(($runUp + $armSpeed + $follow) / 3);
+        } else if ($role === 'Fielder') {
+            $scores = isset($resultData['dashboard_metrics']['fielding_scores']) ? $resultData['dashboard_metrics']['fielding_scores'] : [];
+            $throwing = isset($scores['throwing_accuracy']) && $scores['throwing_accuracy'] !== null ? $scores['throwing_accuracy'] : 80;
+            $coverage = isset($scores['ground_coverage']) && $scores['ground_coverage'] !== null ? $scores['ground_coverage'] : 80;
+            $catching = isset($scores['catching_technique']) && $scores['catching_technique'] !== null ? $scores['catching_technique'] : 80;
+            $overallScore = round(($throwing + $coverage + $catching) / 3);
+        } else {
+            $scores = isset($resultData['dashboard_metrics']['batting_scores']) ? $resultData['dashboard_metrics']['batting_scores'] : [];
+            $stance = isset($scores['stance_and_balance']) && $scores['stance_and_balance'] !== null ? $scores['stance_and_balance'] : 80;
+            $backlift = isset($scores['backlift_and_swing']) && $scores['backlift_and_swing'] !== null ? $scores['backlift_and_swing'] : 80;
+            $execution = isset($scores['footwork_and_execution']) && $scores['footwork_and_execution'] !== null ? $scores['footwork_and_execution'] : 80;
+            $overallScore = round(($stance + $backlift + $execution) / 3);
+        }
+        
+        $verdict = isset($resultData['evaluation_and_feedback']['scouting_summary']) ? $resultData['evaluation_and_feedback']['scouting_summary'] : '';
+        
+        try {
+            $dsn = "pgsql:host=127.0.0.1;port=5432;dbname=gullyvision";
+            $user = "gullyvision_user";
+            $password = "GullyVision2026Pass";
+            $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+            
+            $stmt = $pdo->prepare("INSERT INTO leaderboard (player_name, role, overall_score, technique_name, verdict) VALUES (:player_name, :role, :overall_score, :technique_name, :verdict)");
+            $stmt->execute([
+                ':player_name' => $name,
+                ':role' => $role,
+                ':overall_score' => $overallScore,
+                ':technique_name' => $techName,
+                ':verdict' => $verdict
+            ]);
+        } catch (PDOException $dbEx) {
+            // Silently ignore or log connection/write failure to not disrupt flow
+        }
+    }
 }
 
 $response = null;
@@ -90,13 +144,14 @@ if (isset($_POST['youtube_url']) && !empty(trim($_POST['youtube_url']))) {
     // Escape argument for CLI execution
     $escapedUrl = escapeshellarg($youtubeUrl);
     $escapedType = escapeshellarg($analysisType);
+    $escapedPlayer = escapeshellarg($playerName);
     $errorLog = __DIR__ . '/uploads/error.log';
     if (file_exists($errorLog)) {
         unlink($errorLog);
     }
     
     // Execute Node CLI script for YouTube URL
-    $command = "node " . __DIR__ . "/analyze.js --youtube={$escapedUrl} --type={$escapedType} 2>" . escapeshellarg($errorLog);
+    $command = "node " . __DIR__ . "/analyze.js --youtube={$escapedUrl} --type={$escapedType} --player={$escapedPlayer} 2>" . escapeshellarg($errorLog);
     
     $output = shell_exec($command);
     
@@ -111,6 +166,7 @@ if (isset($_POST['youtube_url']) && !empty(trim($_POST['youtube_url']))) {
         exit;
     }
     
+    saveToLeaderboard($output);
     echo $output;
     exit;
 }
@@ -172,11 +228,12 @@ if (isset($_FILES['video'])) {
     // Escape path and run CLI execution
     $escapedPath = escapeshellarg($tempFilePath);
     $escapedType = escapeshellarg($analysisType);
+    $escapedPlayer = escapeshellarg($playerName);
     $errorLog = __DIR__ . '/uploads/error.log';
     if (file_exists($errorLog)) {
         unlink($errorLog);
     }
-    $command = "node " . __DIR__ . "/analyze.js --video={$escapedPath} --type={$escapedType} 2>" . escapeshellarg($errorLog);
+    $command = "node " . __DIR__ . "/analyze.js --video={$escapedPath} --type={$escapedType} --player={$escapedPlayer} 2>" . escapeshellarg($errorLog);
     
     $output = shell_exec($command);
     
@@ -196,6 +253,7 @@ if (isset($_FILES['video'])) {
         exit;
     }
     
+    saveToLeaderboard($output);
     echo $output;
     exit;
 }
