@@ -1086,6 +1086,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Header Nav CTA Logic
+  const navCtaPortal = document.getElementById('nav-cta-portal');
+  if (navCtaPortal) {
+    navCtaPortal.addEventListener('click', () => {
+      const uploadZoneElement = document.getElementById('upload-card');
+      if (uploadZoneElement) {
+        uploadZoneElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
   // Pre-load the leaderboard structure
   loadLeaderboard();
 });
