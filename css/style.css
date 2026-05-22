@@ -1803,7 +1803,211 @@ body.body-no-scroll {
   }
 }
 
+/* ----------------------------------------------------
+   OUTREACH EMAIL MODALS
+   ---------------------------------------------------- */
 
+.outreach-modal-container {
+  max-width: 560px;
+  padding: var(--space-8) var(--space-7) var(--space-7);
+}
+
+.outreach-player-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: hsla(145, 80%, 42%, 0.06);
+  border: 1px solid hsla(145, 80%, 42%, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.outreach-player-summary__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: hsla(145, 80%, 42%, 0.12);
+  border: 1px solid hsla(145, 80%, 42%, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+}
+
+.outreach-player-summary__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.outreach-player-summary__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.outreach-player-summary__meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.outreach-player-summary__score {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-xl);
+  color: var(--color-green);
+  flex-shrink: 0;
+}
+
+.outreach-player-summary__score-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* Form */
+.outreach-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.outreach-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.outreach-form__label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.outreach-form__input {
+  width: 100%;
+  background: hsla(224, 20%, 8%, 0.8);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  padding: 12px var(--space-4);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.outreach-form__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.outreach-form__input:focus {
+  border-color: var(--color-green);
+  box-shadow: 0 0 0 3px var(--color-green-glow);
+}
+
+.outreach-form__input.input-error {
+  border-color: hsl(0, 80%, 60%);
+  box-shadow: 0 0 0 3px hsla(0, 80%, 60%, 0.15);
+}
+
+.outreach-form__error {
+  font-size: var(--text-xs);
+  color: hsl(0, 80%, 65%);
+  min-height: 16px;
+}
+
+.outreach-form__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+/* Preview Modal */
+.outreach-preview-container {
+  max-width: 680px;
+  padding: var(--space-7) var(--space-7) var(--space-6);
+}
+
+.preview-modal-header {
+  margin-bottom: var(--space-5);
+}
+
+.email-preview-wrapper {
+  margin-bottom: var(--space-5);
+}
+
+.email-preview-chrome {
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+.email-chrome-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px var(--space-4);
+  background: hsla(224, 20%, 6%, 0.95);
+  border-bottom: 1px solid var(--color-border-glass);
+}
+
+.email-chrome-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.email-chrome-dot--red    { background: #ff5f57; }
+.email-chrome-dot--yellow { background: #ffbd2e; }
+.email-chrome-dot--green  { background: #28c940; }
+
+.email-chrome-subject {
+  margin-left: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.email-preview-body {
+  display: block;
+  width: 100%;
+  height: 420px;
+  border: none;
+  background: #ffffff;
+}
+
+.preview-modal-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.preview-send-success {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: hsla(145, 80%, 42%, 0.08);
+  border: 1px solid hsla(145, 80%, 42%, 0.25);
+  border-radius: var(--radius-md);
+  color: var(--color-green);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
 
 
 

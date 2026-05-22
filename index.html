@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- SEO Meta Tags -->
   <title>Gully-Vision — AI-Powered Grassroots Cricket Scouting</title>
-  <meta name="description" content="Get scouted from the cricket maidans of Lucknow to Ekana Stadium. Upload your match or practice video and let Gemini AI analyze your technique.">
+  <meta name="description"
+    content="Get scouted from the cricket maidans of Lucknow to Ekana Stadium. Upload your match or practice video and let Gemini AI analyze your technique.">
   <meta name="author" content="Gully-Vision Team">
-  
+
   <!-- Styling and Fonts -->
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
   <!-- Background Decorative Glowing Lights -->
@@ -21,21 +24,21 @@
   <!-- Navigation Bar -->
   <nav class="nav" id="main-nav">
     <div class="nav__container">
-      <a href="#" class="nav__brand" id="nav-brand-link">
+      <a href="https://codepane.com/gully-vision/" class="nav__brand" id="nav-brand-link">
         <div class="nav__logo-mark" aria-hidden="true">GV</div>
         <span>Gully Vision</span>
       </a>
-      
+
       <ul class="nav__menu" id="nav-menu-list">
         <li><a href="#how-it-works" class="nav__link" id="nav-link-how">How it Works</a></li>
         <li><a href="#leaderboard-section" class="nav__link" id="nav-link-leaderboard">Leaderboard</a></li>
       </ul>
-      
+
       <button class="nav__cta" id="nav-cta-portal">Analyze My Action</button>
-      
+
       <button class="nav__mobile-toggle" id="nav-menu-toggle" aria-label="Toggle Navigation Menu">
         <svg fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
-          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
         </svg>
       </button>
     </div>
@@ -44,48 +47,58 @@
   <!-- Main Content Area -->
   <main class="hero" id="hero-section">
     <div class="hero__grid">
-      
+
       <!-- Left Column: Marketing copy & Trust Indicators -->
       <section class="hero__content" id="hero-copy-column">
         <div class="hero__badge" id="hero-live-badge">
           <div class="hero__badge-dot"></div>
           <span>Lucknow Scouting Live</span>
         </div>
-        
+
         <h1 class="hero__title" id="hero-main-heading">
           From Lucknow's Maidans to <span class="text-gold">Ekana Stadium</span>. <br>
           Get Scouted by <span class="text-green">AI</span>.
         </h1>
-        
+
         <p class="hero__description" id="hero-subheading-text">
-          Upload your batting or bowling video. Our specialized Gemini AI system scores your technique, creates a player profile, and drafts pitches straight to UPCA selectors and premier cricket academies.
+          Upload your batting or bowling video. Our specialized Gemini AI system scores your technique, creates a player
+          profile, and drafts pitches straight to UPCA selectors and premier cricket academies.
         </p>
-        
+
         <div class="hero__actions" id="hero-action-buttons">
           <a href="#upload-card" class="btn btn--primary" id="cta-start-scouting">
             <span>Analyze My Video</span>
             <svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <path d="M5 20h14v-2H5v2zm0-10h4V5h6v5h4l-7 7-7-7z"/>
+              <path d="M5 20h14v-2H5v2zm0-10h4V5h6v5h4l-7 7-7-7z" />
             </svg>
           </a>
           <button class="btn btn--secondary" id="cta-view-dashboard">
             <span>View Leaderboard</span>
           </button>
         </div>
-        
+
         <div class="hero__trust" id="hero-trust-indicators">
           <p class="hero__trust-label">Active Scouting Ground partners</p>
           <div class="hero__trust-items">
             <div class="hero__trust-tag" id="trust-badge-aliganj">
-              <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              <svg fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+              </svg>
               <span>Aliganj Maidans</span>
             </div>
             <div class="hero__trust-tag" id="trust-badge-rajajipuram">
-              <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              <svg fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+              </svg>
               <span>Rajajipuram Turf</span>
             </div>
             <div class="hero__trust-tag" id="trust-badge-lda">
-              <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              <svg fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+              </svg>
               <span>LDA Stadium Nets</span>
             </div>
           </div>
@@ -95,7 +108,7 @@
       <!-- Right Column: Premium AI Scouting Card -->
       <section class="hero__scout" id="hero-scout-column">
         <div class="upload-card" id="upload-card">
-          
+
           <!-- Tab Navigation -->
           <div class="upload-tabs" id="upload-tabs">
             <button class="upload-tab active" id="tab-local" data-target="local-container">Local Video</button>
@@ -104,13 +117,16 @@
 
           <!-- State 1: Dropzone/URL Input Active (Default) -->
           <div id="dropzone-state">
-            
+
             <!-- Local File Upload Container -->
             <div id="local-container">
-              <div class="upload-zone" id="upload-zone" role="button" aria-label="Upload video for analysis" tabindex="0">
+              <div class="upload-zone" id="upload-zone" role="button" aria-label="Upload video for analysis"
+                tabindex="0">
                 <div class="upload-zone__icon-container">
-                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="32" height="32"
+                    aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                 </div>
                 <h3 class="upload-zone__title">Drag & Drop Practice Video</h3>
@@ -124,26 +140,31 @@
               <form id="youtube-form" class="youtube-form-element">
                 <div class="youtube-input-wrapper">
                   <div class="youtube-icon-container">
-                    <svg fill="currentColor" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true" style="color: #ff0000; filter: drop-shadow(0 0 8px rgba(255,0,0,0.5));">
-                      <path d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    <svg fill="currentColor" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true"
+                      style="color: #ff0000; filter: drop-shadow(0 0 8px rgba(255,0,0,0.5));">
+                      <path
+                        d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                     </svg>
                   </div>
                   <h3 class="upload-zone__title">Analyze YouTube Performance</h3>
                   <p class="upload-zone__subtitle">Paste a YouTube video link of your batting or bowling action.</p>
-                  
+
                   <div class="youtube-field-group" style="width: 100%;">
-                    <input type="url" id="youtube-url-input" class="youtube-input" placeholder="https://www.youtube.com/watch?v=..." required>
-                    <button type="submit" class="btn btn--primary" id="youtube-submit-btn" style="width: 100%; margin-top: var(--space-3);">
+                    <input type="url" id="youtube-url-input" class="youtube-input"
+                      placeholder="https://www.youtube.com/watch?v=..." required>
+                    <button type="submit" class="btn btn--primary" id="youtube-submit-btn"
+                      style="width: 100%; margin-top: var(--space-3);">
                       <span>Analyze YouTube Video</span>
                       <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                        <path
+                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
                       </svg>
                     </button>
                   </div>
                 </div>
               </form>
             </div>
-            
+
             <!-- Interactive Pre-loaded Samples -->
             <div class="samples" id="sample-videos-container">
               <h4 class="samples__title">
@@ -151,56 +172,86 @@
                 <span class="text-gold" style="font-size: 10px;">★ GEMINI LIVE DEMO</span>
               </h4>
               <div class="samples__grid">
-                
-                <button class="sample-btn" data-type="batting" data-video="https://www.youtube.com/watch?v=evN_zZ5ZbXI" data-start="12" data-duration="3" data-player="Virat Kholi" data-category="batting" id="sample-btn-batting">
-                  <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+
+                <button class="sample-btn" data-type="batting" data-video="https://www.youtube.com/watch?v=evN_zZ5ZbXI"
+                  data-start="12" data-duration="3" data-player="Virat Kholi" data-category="batting"
+                  id="sample-btn-batting">
+                  <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
                   <div class="sample-btn__details">
                     <span class="sample-btn__title">Cover Drive Analysis</span>
                     <span class="sample-btn__desc">Batting • 3s clip</span>
                   </div>
                 </button>
-                
-                <button class="sample-btn" data-type="bowling" data-video="https://www.youtube.com/watch?v=pgR3GMQEezA" data-start="0" data-duration="4" data-player="Mitchell Johnson" data-category="bowling" id="sample-btn-bowling">
-                  <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+
+                <button class="sample-btn" data-type="bowling" data-video="https://www.youtube.com/watch?v=pgR3GMQEezA"
+                  data-start="0" data-duration="4" data-player="Mitchell Johnson" data-category="bowling"
+                  id="sample-btn-bowling">
+                  <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
                   <div class="sample-btn__details">
                     <span class="sample-btn__title">Outswing Delivery</span>
                     <span class="sample-btn__desc">Bowling • 4s clip</span>
                   </div>
                 </button>
-                
+
               </div>
             </div>
           </div>
-          
+
           <!-- State 4: 12-Second Video Segment Selector (Hidden by default, shown once file uploaded or YouTube link added) -->
           <div id="selector-state" style="display: none; padding-top: var(--space-4);">
             <div class="selector-card">
-              <h4 class="selector-card__title" style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-2);">Optimize Scouting Window</h4>
-              <p class="selector-card__subtitle" style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-bottom: var(--space-4); line-height: 1.4;">Select the start time and duration of the video segment for analysis (max 12s).</p>
-              
+              <h4 class="selector-card__title"
+                style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-2);">
+                Optimize Scouting Window</h4>
+              <p class="selector-card__subtitle"
+                style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-bottom: var(--space-4); line-height: 1.4;">
+                Select the start time and duration of the video segment for analysis (max 12s).</p>
+
               <!-- Video Preview inside selector for scrubbing/choosing start time -->
-              <div class="selector-media-preview" style="position: relative; margin-bottom: var(--space-4); border-radius: var(--radius-sm); overflow: hidden; background: #000;">
-                <video id="selector-video-preview" class="selector-video-preview" muted playsinline style="width: 100%; display: block; max-height: 200px; object-fit: contain;"></video>
-                <div id="selector-youtube-player-container" style="display: none; width: 100%; aspect-ratio: 16/9; max-height: 200px; background: #000;"></div>
-                <div id="selector-youtube-placeholder" class="youtube-preview-placeholder" style="display: none; height: 160px; align-items: center; justify-content: center; flex-direction: column; gap: 8px;">
-                  <svg fill="currentColor" viewBox="0 0 24 24" width="36" height="36" style="color: #ff0000; filter: drop-shadow(0 0 8px rgba(255,0,0,0.5));">
-                    <path d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              <div class="selector-media-preview"
+                style="position: relative; margin-bottom: var(--space-4); border-radius: var(--radius-sm); overflow: hidden; background: #000;">
+                <video id="selector-video-preview" class="selector-video-preview" muted playsinline
+                  style="width: 100%; display: block; max-height: 200px; object-fit: contain;"></video>
+                <div id="selector-youtube-player-container"
+                  style="display: none; width: 100%; aspect-ratio: 16/9; max-height: 200px; background: #000;"></div>
+                <div id="selector-youtube-placeholder" class="youtube-preview-placeholder"
+                  style="display: none; height: 160px; align-items: center; justify-content: center; flex-direction: column; gap: 8px;">
+                  <svg fill="currentColor" viewBox="0 0 24 24" width="36" height="36"
+                    style="color: #ff0000; filter: drop-shadow(0 0 8px rgba(255,0,0,0.5));">
+                    <path
+                      d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                   </svg>
-                  <span style="font-family: var(--font-display); font-size: 11px; font-weight: 600; color: var(--color-text-secondary);">YouTube Live Feed Ready</span>
-                  <span style="font-family: monospace; font-size: 9px; color: var(--color-text-muted);" id="selector-youtube-hud-text"></span>
+                  <span
+                    style="font-family: var(--font-display); font-size: 11px; font-weight: 600; color: var(--color-text-secondary);">YouTube
+                    Live Feed Ready</span>
+                  <span style="font-family: monospace; font-size: 9px; color: var(--color-text-muted);"
+                    id="selector-youtube-hud-text"></span>
                 </div>
-                <div id="selector-time-overlay" style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border: 1px solid var(--color-border-glass); padding: 2px 6px; border-radius: var(--radius-xs); font-family: monospace; font-size: 10px; font-weight: 600; color: var(--color-gold); z-index: 10; pointer-events: none;">0.0s / 0.0s</div>
+                <div id="selector-time-overlay"
+                  style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border: 1px solid var(--color-border-glass); padding: 2px 6px; border-radius: var(--radius-xs); font-family: monospace; font-size: 10px; font-weight: 600; color: var(--color-gold); z-index: 10; pointer-events: none;">
+                  0.0s / 0.0s</div>
               </div>
-              
+
               <!-- Player Identity & Role Selector -->
-              <div class="selector-inputs" style="margin-bottom: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3);">
+              <div class="selector-inputs"
+                style="margin-bottom: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3);">
                 <div style="display: flex; flex-direction: column; gap: var(--space-1);">
-                  <label for="player-name-input" style="font-size: var(--text-xs); font-weight: 600; color: var(--color-text-secondary); text-align: left;">Player Name</label>
-                  <input type="text" id="player-name-input" placeholder="Enter player name..." style="width: 100%; background: hsla(220, 20%, 10%, 0.6); border: 1px solid var(--color-border-glass); border-radius: var(--radius-xs); padding: var(--space-2) var(--space-3); color: #fff; font-size: var(--text-sm); outline: none;">
+                  <label for="player-name-input"
+                    style="font-size: var(--text-xs); font-weight: 600; color: var(--color-text-secondary); text-align: left;">Player
+                    Name</label>
+                  <input type="text" id="player-name-input" placeholder="Enter player name..."
+                    style="width: 100%; background: hsla(220, 20%, 10%, 0.6); border: 1px solid var(--color-border-glass); border-radius: var(--radius-xs); padding: var(--space-2) var(--space-3); color: #fff; font-size: var(--text-sm); outline: none;">
                 </div>
                 <div style="display: flex; flex-direction: column; gap: var(--space-1);">
-                  <label for="analysis-category-select" style="font-size: var(--text-xs); font-weight: 600; color: var(--color-text-secondary); text-align: left;">Target Category / Role</label>
-                  <select id="analysis-category-select" style="width: 100%; background: hsla(220, 20%, 10%, 0.6); border: 1px solid var(--color-border-glass); border-radius: var(--radius-xs); padding: var(--space-2) var(--space-3); color: #fff; font-size: var(--text-sm); outline: none; cursor: pointer;">
+                  <label for="analysis-category-select"
+                    style="font-size: var(--text-xs); font-weight: 600; color: var(--color-text-secondary); text-align: left;">Target
+                    Category / Role</label>
+                  <select id="analysis-category-select"
+                    style="width: 100%; background: hsla(220, 20%, 10%, 0.6); border: 1px solid var(--color-border-glass); border-radius: var(--radius-xs); padding: var(--space-2) var(--space-3); color: #fff; font-size: var(--text-sm); outline: none; cursor: pointer;">
                     <option value="batting">Batting Technique Analysis</option>
                     <option value="bowling">Bowling Action Analysis</option>
                     <option value="fielding">Fielding Technique Analysis</option>
@@ -209,68 +260,87 @@
               </div>
 
               <!-- Clip segment picker inputs -->
-              <div class="selector-controls" style="margin-bottom: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3);">
+              <div class="selector-controls"
+                style="margin-bottom: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3);">
                 <div class="selector-controls__row" style="display: flex; flex-direction: column; gap: var(--space-1);">
-                  <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); font-weight: 600;">
+                  <div
+                    style="display: flex; justify-content: space-between; font-size: var(--text-xs); font-weight: 600;">
                     <span style="color: var(--color-text-secondary);">Select Clip Start Time</span>
                     <span style="color: var(--color-gold);" id="clip-start-val">0.0s</span>
                   </div>
-                  <input type="range" id="clip-start-slider" class="selector-slider" min="0" max="60" step="0.5" value="0" style="width: 100%; -webkit-appearance: none; appearance: none; background: hsla(220, 20%, 20%, 0.5); height: 6px; border-radius: 3px; outline: none; transition: background 0.3s;">
+                  <input type="range" id="clip-start-slider" class="selector-slider" min="0" max="60" step="0.5"
+                    value="0"
+                    style="width: 100%; -webkit-appearance: none; appearance: none; background: hsla(220, 20%, 20%, 0.5); height: 6px; border-radius: 3px; outline: none; transition: background 0.3s;">
                 </div>
                 <div class="selector-controls__row" style="display: flex; flex-direction: column; gap: var(--space-1);">
-                  <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); font-weight: 600;">
+                  <div
+                    style="display: flex; justify-content: space-between; font-size: var(--text-xs); font-weight: 600;">
                     <span style="color: var(--color-text-secondary);">Select Clip Duration</span>
                     <span style="color: var(--color-gold);" id="clip-duration-val">12.0s</span>
                   </div>
-                  <input type="range" id="clip-duration-slider" class="selector-slider" min="1" max="12" step="0.5" value="12" style="width: 100%; -webkit-appearance: none; appearance: none; background: hsla(220, 20%, 20%, 0.5); height: 6px; border-radius: 3px; outline: none; transition: background 0.3s;">
+                  <input type="range" id="clip-duration-slider" class="selector-slider" min="1" max="12" step="0.5"
+                    value="12"
+                    style="width: 100%; -webkit-appearance: none; appearance: none; background: hsla(220, 20%, 20%, 0.5); height: 6px; border-radius: 3px; outline: none; transition: background 0.3s;">
                 </div>
-                <div class="selector-range-info" style="background: hsla(220, 20%, 10%, 0.4); border: 1px solid var(--color-border-glass); border-radius: var(--radius-xs); padding: var(--space-2) var(--space-3); text-align: center;">
-                  <span style="font-size: var(--text-xs); color: var(--color-text-secondary);">Analysis Segment: <strong id="clip-range-display" style="color: var(--color-green);">0.0s - 12.0s</strong> (<span id="clip-duration-display">12.0s</span> clip)</span>
+                <div class="selector-range-info"
+                  style="background: hsla(220, 20%, 10%, 0.4); border: 1px solid var(--color-border-glass); border-radius: var(--radius-xs); padding: var(--space-2) var(--space-3); text-align: center;">
+                  <span style="font-size: var(--text-xs); color: var(--color-text-secondary);">Analysis Segment: <strong
+                      id="clip-range-display" style="color: var(--color-green);">0.0s - 12.0s</strong> (<span
+                      id="clip-duration-display">12.0s</span> clip)</span>
                 </div>
               </div>
-              
+
               <!-- Action buttons inside selector -->
               <div class="selector-actions" style="display: flex; gap: var(--space-3);">
                 <button class="btn btn--secondary" id="selector-back-btn" style="flex: 1; padding: 10px;">Back</button>
                 <button class="btn btn--primary" id="selector-analyze-btn" style="flex: 1.5; padding: 10px;">
                   <span>Start AI Scouting</span>
                   <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                    <path
+                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
                   </svg>
                 </button>
               </div>
             </div>
           </div>
-          
+
         </div>
       </section>
-      
+
     </div>
   </main>
 
   <!-- Leaderboard Section (full-width below hero section) -->
-  <section class="leaderboard-section" id="leaderboard-section" style="padding: var(--space-8) 0; border-top: 1px solid var(--color-border-glass); background: radial-gradient(circle at top left, hsla(140, 100%, 5%, 0.1), transparent 60%);">
+  <section class="leaderboard-section" id="leaderboard-section"
+    style="padding: var(--space-8) 0; border-top: 1px solid var(--color-border-glass); background: radial-gradient(circle at top left, hsla(140, 100%, 5%, 0.1), transparent 60%);">
     <div style="max-width: 1200px; margin: 0 auto; padding: 0 var(--space-4);">
       <div class="section-header" style="text-align: center; margin-bottom: var(--space-6);">
         <span class="badge" style="margin-bottom: var(--space-2); display: inline-block;">UPCA Pathway</span>
-        <h2 style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: #fff; margin: var(--space-2) 0;">Lucknow Grassroots Leaderboard</h2>
-        <p style="color: var(--color-text-secondary); max-width: 600px; margin: 0 auto; font-size: var(--text-sm);">Top performing prospects scouted via Gully-Vision computer vision analysis.</p>
+        <h2
+          style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: #fff; margin: var(--space-2) 0;">
+          Lucknow Grassroots Leaderboard</h2>
+        <p style="color: var(--color-text-secondary); max-width: 600px; margin: 0 auto; font-size: var(--text-sm);">Top
+          performing prospects scouted via Gully-Vision computer vision analysis.</p>
       </div>
-      
-      <div class="leaderboard-card" style="background: var(--bg-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--color-border-glass); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);">
+
+      <div class="leaderboard-card"
+        style="background: var(--bg-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--color-border-glass); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);">
         <!-- Ranking Sort Controls -->
         <div class="leaderboard-controls">
-          <span style="font-size: var(--text-xs); color: var(--color-text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Rank By:</span>
+          <span
+            style="font-size: var(--text-xs); color: var(--color-text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Rank
+            By:</span>
           <div class="leaderboard-sort-selector">
             <button id="rank-by-rating" class="leaderboard-sort-btn active">Rating</button>
             <button id="rank-by-score" class="leaderboard-sort-btn">Total Score</button>
           </div>
         </div>
-        
+
         <div style="overflow-x: auto;">
           <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 600px;">
             <thead>
-              <tr style="border-bottom: 2px solid var(--color-border-glass); color: var(--color-text-secondary); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em;">
+              <tr
+                style="border-bottom: 2px solid var(--color-border-glass); color: var(--color-text-secondary); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em;">
                 <th style="padding: var(--space-3) var(--space-4);">Rank</th>
                 <th style="padding: var(--space-3) var(--space-4);">Player Name</th>
                 <th style="padding: var(--space-3) var(--space-4);">Role</th>
@@ -285,7 +355,7 @@
             </tbody>
           </table>
         </div>
-        
+
         <div style="margin-top: var(--space-5); text-align: center;">
           <button class="btn btn--secondary" id="close-leaderboard-btn">Back to Top</button>
         </div>
@@ -294,40 +364,55 @@
   </section>
 
   <!-- Scouting Analysis Section (full-width below hero section, initially hidden) -->
-  <section class="analysis-dashboard" id="analysis-dashboard" style="display: none; padding: var(--space-8) 0; border-top: 1px solid var(--color-border-glass); background: radial-gradient(circle at top, hsla(140, 60%, 15%, 0.05) 0%, transparent 80%);">
+  <section class="analysis-dashboard" id="analysis-dashboard"
+    style="display: none; padding: var(--space-8) 0; border-top: 1px solid var(--color-border-glass); background: radial-gradient(circle at top, hsla(140, 60%, 15%, 0.05) 0%, transparent 80%);">
     <div class="analysis-dashboard__container" style="max-width: 1200px; margin: 0 auto; padding: 0 var(--space-4);">
-      
-      <div class="analysis-dashboard__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border-glass);">
+
+      <div class="analysis-dashboard__header"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border-glass);">
         <div>
-          <h2 class="analysis-dashboard__title" style="font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 1px;">Scouting Analysis Dashboard</h2>
-          <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 2px;">Real-time computer vision joint tracking and telemetry compilation.</p>
+          <h2 class="analysis-dashboard__title"
+            style="font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 1px;">
+            Scouting Analysis Dashboard</h2>
+          <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 2px;">Real-time computer
+            vision joint tracking and telemetry compilation.</p>
         </div>
-        <div class="dashboard-badge" style="display: flex; align-items: center; gap: 8px; background: hsla(140, 65%, 25%, 0.2); border: 1px solid hsla(140, 65%, 45%, 0.3); padding: 4px 12px; border-radius: 16px; font-size: 10px; font-weight: 700; color: var(--color-green); text-transform: uppercase; letter-spacing: 0.5px;">
-          <span class="video-hud__rec-dot" style="width: 6px; height: 6px; background-color: var(--color-green); border-radius: 50%; display: inline-block; animation: rec-pulse 1.5s infinite;"></span>
+        <div class="dashboard-badge"
+          style="display: flex; align-items: center; gap: 8px; background: hsla(140, 65%, 25%, 0.2); border: 1px solid hsla(140, 65%, 45%, 0.3); padding: 4px 12px; border-radius: 16px; font-size: 10px; font-weight: 700; color: var(--color-green); text-transform: uppercase; letter-spacing: 0.5px;">
+          <span class="video-hud__rec-dot"
+            style="width: 6px; height: 6px; background-color: var(--color-green); border-radius: 50%; display: inline-block; animation: rec-pulse 1.5s infinite;"></span>
           <span>Verified AI Telemetry</span>
         </div>
       </div>
-      
+
       <div class="analysis-dashboard__grid" style="display: grid; grid-template-columns: 1fr; gap: var(--space-6);">
-        
+
         <!-- Left: Looping Video Preview -->
         <div class="analysis-dashboard__media" style="width: 100%;">
-          <div class="media-container" id="media-container" style="display: none; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--color-border-glass); background: #000;">
+          <div class="media-container" id="media-container"
+            style="display: none; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--color-border-glass); background: #000;">
             <div class="video-preview-wrapper" style="position: relative;">
-              <video id="video-preview" class="video-preview" muted loop playsinline style="width: 100%; display: block; max-height: 480px; object-fit: contain;"></video>
-              <div id="dashboard-youtube-player-container" style="display: none; width: 100%; aspect-ratio: 16/9; max-height: 480px; background: #000;"></div>
+              <video id="video-preview" class="video-preview" muted loop playsinline
+                style="width: 100%; display: block; max-height: 480px; object-fit: contain;"></video>
+              <div id="dashboard-youtube-player-container"
+                style="display: none; width: 100%; aspect-ratio: 16/9; max-height: 480px; background: #000;"></div>
               <div class="video-scanner" id="scanner-line"></div>
-              
+
               <!-- Video HUD Overlay -->
-              <div class="video-hud" style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: var(--space-3); pointer-events: none; font-family: monospace; font-size: 9px; color: rgba(255,255,255,0.7); z-index: 2;">
-                <div class="video-hud__top" style="display: flex; justify-content: space-between; align-items: center; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
-                  <div class="video-hud__rec" style="display: flex; align-items: center; gap: 4px; color: var(--color-green); font-weight: bold;">
-                    <span class="video-hud__rec-dot" style="width: 6px; height: 6px; background-color: var(--color-green); border-radius: 50%; display: inline-block;"></span>
+              <div class="video-hud"
+                style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: var(--space-3); pointer-events: none; font-family: monospace; font-size: 9px; color: rgba(255,255,255,0.7); z-index: 2;">
+                <div class="video-hud__top"
+                  style="display: flex; justify-content: space-between; align-items: center; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
+                  <div class="video-hud__rec"
+                    style="display: flex; align-items: center; gap: 4px; color: var(--color-green); font-weight: bold;">
+                    <span class="video-hud__rec-dot"
+                      style="width: 6px; height: 6px; background-color: var(--color-green); border-radius: 50%; display: inline-block;"></span>
                     <span>GEMINI AI SCOUTING</span>
                   </div>
                   <div>FPS: 60 / 1080P</div>
                 </div>
-                <div class="video-hud__bottom" style="display: flex; justify-content: space-between; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
+                <div class="video-hud__bottom"
+                  style="display: flex; justify-content: space-between; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
                   <div>TRACKING: TRUE</div>
                   <div>LOC: LKO_MAIDAN_STATION</div>
                 </div>
@@ -335,10 +420,10 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Right: Flow logs (scanning) or results scorecard -->
         <div class="analysis-dashboard__results" style="width: 100%;">
-          
+
           <!-- State 2: Simulated Analyzing Processing (Scanning) -->
           <div class="scout-flow" id="scout-flow">
             <div class="analysis-status">
@@ -353,15 +438,16 @@
                 <!-- Log updates append here dynamically via js -->
               </div>
             </div>
-            
-            <div class="scout-flow__actions" style="margin-top: var(--space-4); display: flex; justify-content: flex-end;">
+
+            <div class="scout-flow__actions"
+              style="margin-top: var(--space-4); display: flex; justify-content: flex-end;">
               <button class="btn btn--secondary" id="cancel-btn">Cancel Analysis</button>
             </div>
           </div>
-          
+
           <!-- State 3: Scouting Results Scorecard (Success) -->
           <div class="scout-results" id="scout-results" style="display: none;">
-            
+
             <!-- Result Left Panel: player name, style, overall score, metrics -->
             <div class="scout-results__left-panel">
               <div class="results-header">
@@ -371,7 +457,7 @@
                 </div>
                 <div class="score-badge" id="result-score">--/100</div>
               </div>
-              
+
               <div class="metrics-list" id="results-metrics-grid">
                 <h4 class="section-title">Technique Scores</h4>
                 <div class="metric-row">
@@ -379,23 +465,29 @@
                     <span class="metric-row__label">Stance & Balance</span>
                     <span class="metric-row__val" class="metric-row__val">--%</span>
                   </div>
-                  <div class="metric-bar"><div class="metric-bar__fill" style="width: 0%;"></div></div>
+                  <div class="metric-bar">
+                    <div class="metric-bar__fill" style="width: 0%;"></div>
+                  </div>
                 </div>
-                
+
                 <div class="metric-row">
                   <div class="metric-row__info">
                     <span class="metric-row__label">Backlift & Swing</span>
                     <span class="metric-row__val" class="metric-row__val">--%</span>
                   </div>
-                  <div class="metric-bar"><div class="metric-bar__fill" style="width: 0%;"></div></div>
+                  <div class="metric-bar">
+                    <div class="metric-bar__fill" style="width: 0%;"></div>
+                  </div>
                 </div>
-                
+
                 <div class="metric-row">
                   <div class="metric-row__info">
                     <span class="metric-row__label">Footwork & Execution</span>
                     <span class="metric-row__val" class="metric-row__val">--%</span>
                   </div>
-                  <div class="metric-bar"><div class="metric-bar__fill" style="width: 0%;"></div></div>
+                  <div class="metric-bar">
+                    <div class="metric-bar__fill" style="width: 0%;"></div>
+                  </div>
                 </div>
               </div>
 
@@ -408,7 +500,7 @@
 
             <!-- Result Right Panel: Biomechanical stats & Scouting pitch -->
             <div class="scout-results__right-panel">
-              
+
               <!-- Key strengths and improvements -->
               <div class="skills-breakdown">
                 <div class="skills-box skills-box--strengths">
@@ -493,83 +585,177 @@
                 <button class="btn btn--primary" id="outreach-btn" style="flex: 1.5;">
                   <span>Trigger Outreach</span>
                   <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                   </svg>
                 </button>
               </div>
             </div>
 
           </div>
-          
+
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Outreach Email Input Modal -->
+  <div class="modal-overlay" id="outreach-modal" aria-hidden="true" role="dialog" aria-labelledby="outreach-modal-title">
+    <div class="modal-container outreach-modal-container">
+      <button class="modal-close" id="outreach-modal-close" aria-label="Close Modal">
+        <svg fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+        </svg>
+      </button>
+
+      <div class="modal-header">
+        <div class="modal-badge-wrapper">
+          <span class="modal-badge">Scout Outreach</span>
+        </div>
+        <h2 id="outreach-modal-title" class="modal-title">Send Scouting Report</h2>
+        <p class="modal-subtitle">Enter the selector or academy email address to send the AI-generated scouting report and pitch hook.</p>
+      </div>
+
+      <div class="outreach-player-summary" id="outreach-player-summary">
+        <!-- Populated by JS -->
+      </div>
+
+      <form class="outreach-form" id="outreach-email-form" novalidate>
+        <div class="outreach-form__field">
+          <label class="outreach-form__label" for="outreach-email-input">Recipient Email Address</label>
+          <input
+            class="outreach-form__input"
+            id="outreach-email-input"
+            type="email"
+            placeholder="selector@upca-cricket.com"
+            autocomplete="email"
+            required
+          />
+          <span class="outreach-form__error" id="outreach-email-error"></span>
+        </div>
+        <div class="outreach-form__actions">
+          <button type="button" class="btn btn--secondary" id="outreach-cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn--primary" id="outreach-preview-btn">
+            <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            <span>Preview Email</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Email Preview Modal -->
+  <div class="modal-overlay" id="outreach-preview-modal" aria-hidden="true" role="dialog" aria-labelledby="preview-modal-title">
+    <div class="modal-container outreach-preview-container">
+      <button class="modal-close" id="preview-modal-close" aria-label="Close Preview">
+        <svg fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+        </svg>
+      </button>
+
+      <div class="preview-modal-header">
+        <h2 id="preview-modal-title" class="modal-title" style="font-size: var(--text-xl);">Email Preview</h2>
+        <p class="modal-subtitle" id="preview-modal-subtitle">Review the email before sending.</p>
+      </div>
+
+      <div class="email-preview-wrapper">
+        <div class="email-preview-chrome">
+          <div class="email-chrome-bar">
+            <span class="email-chrome-dot email-chrome-dot--red"></span>
+            <span class="email-chrome-dot email-chrome-dot--yellow"></span>
+            <span class="email-chrome-dot email-chrome-dot--green"></span>
+            <span class="email-chrome-subject" id="preview-subject-line"></span>
+          </div>
+          <iframe id="email-preview-frame" class="email-preview-body" title="Email Preview" sandbox="allow-same-origin"></iframe>
+        </div>
+      </div>
+
+      <div class="preview-modal-actions">
+        <button class="btn btn--secondary" id="preview-back-btn">
+          <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          Edit Email
+        </button>
+        <button class="btn btn--primary" id="preview-send-btn">
+          <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          <span id="preview-send-label">Confirm & Send</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- How It Works Modal -->
   <div class="modal-overlay" id="how-it-works-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
     <div class="modal-container">
       <button class="modal-close" id="modal-close-btn" aria-label="Close Modal">
         <svg fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
-          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
         </svg>
       </button>
-      
+
       <div class="modal-header">
         <div class="modal-badge-wrapper">
           <span class="modal-badge">Technology Overview</span>
         </div>
         <h2 id="modal-title" class="modal-title">How Gully-Vision Works</h2>
-        <p class="modal-subtitle">AI-powered technique tracking that bridges the gap between Lucknow maidans and professional cricket pathways.</p>
+        <p class="modal-subtitle">AI-powered technique tracking that bridges the gap between Lucknow maidans and
+          professional cricket pathways.</p>
       </div>
-      
+
       <div class="modal-steps">
         <div class="modal-step">
           <div class="modal-step__num">1</div>
           <div class="modal-step__icon-box">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="28" height="28">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
           </div>
           <h3 class="modal-step__title">Upload & Input</h3>
-          <p class="modal-step__desc">Upload your batting/bowling/fielding video (MP4/MOV) or paste a YouTube performance link directly.</p>
+          <p class="modal-step__desc">Upload your batting/bowling/fielding video (MP4/MOV) or paste a YouTube
+            performance link directly.</p>
         </div>
-        
+
         <div class="modal-step">
           <div class="modal-step__num">2</div>
           <div class="modal-step__icon-box">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="28" height="28">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
           </div>
           <h3 class="modal-step__title">Target the Window</h3>
-          <p class="modal-step__desc">Use the interactive slider to select a key 12-second scouting window covering the setup, release, or impact point.</p>
+          <p class="modal-step__desc">Use the interactive slider to select a key 12-second scouting window covering the
+            setup, release, or impact point.</p>
         </div>
-        
+
         <div class="modal-step">
           <div class="modal-step__num">3</div>
           <div class="modal-step__icon-box">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="28" height="28">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
           <h3 class="modal-step__title">AI Analysis</h3>
-          <p class="modal-step__desc">Gemini 3.5 Flash processes the footage, executing multi-point tracking on joints, head positions, and swing velocities.</p>
+          <p class="modal-step__desc">Gemini 3.5 Flash processes the footage, executing multi-point tracking on joints,
+            head positions, and swing velocities.</p>
         </div>
-        
+
         <div class="modal-step">
           <div class="modal-step__num">4</div>
           <div class="modal-step__icon-box">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="28" height="28">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
             </svg>
           </div>
           <h3 class="modal-step__title">Get Scouted</h3>
-          <p class="modal-step__desc">View detailed telemetry charts, receive a custom UPCA selector scouting pitch, and claim your spot on the live leaderboard.</p>
+          <p class="modal-step__desc">View detailed telemetry charts, receive a custom UPCA selector scouting pitch, and
+            claim your spot on the live leaderboard.</p>
         </div>
       </div>
-      
+
       <div class="modal-footer">
         <button class="btn btn--primary" id="modal-cta-btn">Start Scouting Now</button>
       </div>
@@ -580,4 +766,5 @@
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
 </body>
+
 </html>

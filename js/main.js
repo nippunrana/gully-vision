@@ -859,15 +859,329 @@ document.addEventListener('DOMContentLoaded', () => {
     populateList('areas-to-improve-list', feedback.areas_to_improve || []);
     populateList('observations-list', data.observations || []);
     
-    // Bind outreach button to pitch hook dynamically
+    // Bind outreach button to open the email modal
     const outreachBtn = document.getElementById('outreach-btn');
     if (outreachBtn) {
-      outreachBtn.onclick = () => {
-        const emailBody = `Respected Selectors,\n\nI would like to recommend ${playerName} for your review. Biomechanical scouting results:\n\nRole: ${role}\nAction: ${techName} (${colloquialName})\nOverall Rating: ${overallScore}/100\n\nScout Pitch:\n"${pitchHook}"\n\nRegards,\nGully-Vision Agent`;
-        alert(`Selector Outreach Triggered!\n\nPitch Hook Sent:\n"${pitchHook}"\n\nDraft Email Content:\n\n${emailBody}`);
-      };
+      outreachBtn.onclick = () => openOutreachModal({
+        playerName, role, techName, colloquialName,
+        overallScore, pitchHook, metrics,
+        strengths: feedback.key_strengths || [],
+        improvements: feedback.areas_to_improve || [],
+        scoutingSummary: feedback.scouting_summary || '',
+        qualityRating: feedback.quality_rating || '',
+      });
     }
   }
+
+  // ---- Outreach Email Flow ----
+
+  const outreachModal         = document.getElementById('outreach-modal');
+  const outreachModalClose    = document.getElementById('outreach-modal-close');
+  const outreachCancelBtn     = document.getElementById('outreach-cancel-btn');
+  const outreachEmailForm     = document.getElementById('outreach-email-form');
+  const outreachEmailInput    = document.getElementById('outreach-email-input');
+  const outreachEmailError    = document.getElementById('outreach-email-error');
+  const outreachPlayerSummary = document.getElementById('outreach-player-summary');
+
+  const previewModal      = document.getElementById('outreach-preview-modal');
+  const previewModalClose = document.getElementById('preview-modal-close');
+  const previewBackBtn    = document.getElementById('preview-back-btn');
+  const previewSendBtn    = document.getElementById('preview-send-btn');
+  const previewSendLabel  = document.getElementById('preview-send-label');
+  const previewSubject    = document.getElementById('preview-subject-line');
+  const previewFrame      = document.getElementById('email-preview-frame');
+  const previewSubtitle   = document.getElementById('preview-modal-subtitle');
+
+  let _outreachData = null;
+  let _emailSubject = '';
+  let _emailHtml    = '';
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function setModalVisible(el, visible) {
+    if (!el) return;
+    if (visible) {
+      el.classList.add('active');
+      el.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('body-no-scroll');
+    } else {
+      el.classList.remove('active');
+      el.setAttribute('aria-hidden', 'true');
+      if (!document.querySelector('.modal-overlay.active')) {
+        document.body.classList.remove('body-no-scroll');
+      }
+    }
+  }
+
+  function buildPlayerSummaryDOM(d) {
+    const wrapper = document.createDocumentFragment();
+
+    const avatar = document.createElement('div');
+    avatar.className = 'outreach-player-summary__avatar';
+    avatar.textContent = '🏏';
+
+    const info = document.createElement('div');
+    info.className = 'outreach-player-summary__info';
+
+    const name = document.createElement('div');
+    name.className = 'outreach-player-summary__name';
+    name.textContent = d.playerName;
+
+    const meta = document.createElement('div');
+    meta.className = 'outreach-player-summary__meta';
+    meta.textContent = `${d.role} · ${d.techName} (${d.colloquialName})`;
+
+    info.appendChild(name);
+    info.appendChild(meta);
+
+    const scoreWrap = document.createElement('div');
+    const scoreNum = document.createElement('div');
+    scoreNum.className = 'outreach-player-summary__score';
+    scoreNum.textContent = d.overallScore;
+    const scoreLabel = document.createElement('div');
+    scoreLabel.className = 'outreach-player-summary__score-label';
+    scoreLabel.textContent = '/ 100';
+    scoreWrap.appendChild(scoreNum);
+    scoreWrap.appendChild(scoreLabel);
+
+    wrapper.appendChild(avatar);
+    wrapper.appendChild(info);
+    wrapper.appendChild(scoreWrap);
+    return wrapper;
+  }
+
+  function buildEmailHtml(d) {
+    const esc = escHtml;
+    const scoreColor = d.overallScore >= 80 ? '#15bd5d' : d.overallScore >= 60 ? '#f5b600' : '#e74c3c';
+
+    const metricRows = d.metrics.map(m =>
+      `<tr>
+        <td style="padding:6px 0;font-size:13px;color:#8899aa;">${esc(m.label)}</td>
+        <td style="padding:6px 0;text-align:right;">
+          <span style="display:inline-block;background:#0d1117;border-radius:4px;padding:2px 10px;font-size:13px;font-weight:600;color:#15bd5d;">${m.score}%</span>
+        </td>
+      </tr>`
+    ).join('');
+
+    const strengthItems = d.strengths.slice(0, 4).map(s =>
+      `<li style="margin-bottom:6px;color:#c9d1d9;font-size:14px;">✓ &nbsp;${esc(s)}</li>`
+    ).join('');
+
+    const improvItems = d.improvements.slice(0, 3).map(s =>
+      `<li style="margin-bottom:6px;color:#c9d1d9;font-size:14px;">→ &nbsp;${esc(s)}</li>`
+    ).join('');
+
+    const summaryBlock = d.scoutingSummary
+      ? `<tr><td style="background:#161b22;padding:20px 40px;">
+          <p style="margin:0 0 8px;color:#8b949e;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Scout Assessment</p>
+          <p style="margin:0;color:#c9d1d9;font-size:14px;line-height:1.7;">${esc(d.scoutingSummary)}</p>
+        </td></tr>`
+      : '';
+
+    const qualityBlock = d.qualityRating
+      ? `<p style="margin:8px 0 0;color:#f5b600;font-size:13px;font-weight:600;">${esc(d.qualityRating)}</p>`
+      : '';
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Gully-Vision Scouting Report</title></head>
+<body style="margin:0;padding:0;background:#0d1117;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0d1117;padding:32px 16px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+  <tr>
+    <td style="background:linear-gradient(135deg,#0d1f12 0%,#0a1a0e 100%);border-radius:16px 16px 0 0;padding:36px 40px 28px;border-bottom:2px solid #15bd5d;">
+      <table width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td><div style="display:inline-block;background:#15bd5d;color:#000;font-weight:900;font-size:18px;padding:6px 14px;border-radius:8px;letter-spacing:1px;">GV</div><span style="margin-left:12px;color:#15bd5d;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;vertical-align:middle;">Gully-Vision Scout</span></td>
+        <td align="right"><span style="background:rgba(21,189,93,0.1);border:1px solid rgba(21,189,93,0.3);color:#15bd5d;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;letter-spacing:1px;">AI SCOUTING REPORT</span></td>
+      </tr></table>
+      <h1 style="margin:24px 0 6px;color:#f0f6fc;font-size:26px;font-weight:800;line-height:1.2;">Player Scouting Report</h1>
+      <p style="margin:0;color:#8b949e;font-size:14px;">Biomechanical AI Analysis &mdash; Lucknow Grassroots Cricket</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="background:#161b22;padding:28px 40px;">
+      <table width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td>
+          <p style="margin:0 0 4px;color:#8b949e;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;">Player Profile</p>
+          <h2 style="margin:0 0 6px;color:#f0f6fc;font-size:22px;font-weight:800;">${esc(d.playerName)}</h2>
+          <p style="margin:0;color:#8b949e;font-size:14px;">${esc(d.role)} &bull; ${esc(d.techName)} <span style="color:#484f58;">(${esc(d.colloquialName)})</span></p>
+          ${qualityBlock}
+        </td>
+        <td align="right" style="vertical-align:top;">
+          <div style="text-align:center;">
+            <div style="font-size:44px;font-weight:900;color:${scoreColor};line-height:1;">${d.overallScore}</div>
+            <div style="font-size:12px;color:#8b949e;font-weight:600;letter-spacing:1px;">OUT OF 100</div>
+          </div>
+        </td>
+      </tr></table>
+    </td>
+  </tr>
+  <tr>
+    <td style="background:#0d1117;padding:0 40px;">
+      <div style="border-left:3px solid #15bd5d;padding:18px 20px;background:rgba(21,189,93,0.05);border-radius:0 10px 10px 0;margin:4px 0;">
+        <p style="margin:0 0 6px;color:#15bd5d;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Scout Pitch Hook</p>
+        <p style="margin:0;color:#c9d1d9;font-size:15px;font-style:italic;line-height:1.6;">&ldquo;${esc(d.pitchHook)}&rdquo;</p>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td style="background:#0d1117;padding:24px 40px 4px;">
+      <p style="margin:0 0 12px;color:#8b949e;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Biomechanical Scores</p>
+      <table width="100%" cellpadding="0" cellspacing="0">${metricRows}</table>
+    </td>
+  </tr>
+  <tr>
+    <td style="background:#0d1117;padding:20px 40px 28px;">
+      <table width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td width="50%" style="vertical-align:top;padding-right:16px;">
+          <p style="margin:0 0 10px;color:#15bd5d;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Technical Strengths</p>
+          <ul style="margin:0;padding:0;list-style:none;">${strengthItems}</ul>
+        </td>
+        <td width="50%" style="vertical-align:top;padding-left:16px;border-left:1px solid #21262d;">
+          <p style="margin:0 0 10px;color:#f5b600;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Areas to Develop</p>
+          <ul style="margin:0;padding:0;list-style:none;">${improvItems}</ul>
+        </td>
+      </tr></table>
+    </td>
+  </tr>
+  ${summaryBlock}
+  <tr>
+    <td style="background:#0d1f12;border-radius:0 0 16px 16px;padding:20px 40px;border-top:1px solid rgba(21,189,93,0.2);">
+      <p style="margin:0;color:#484f58;font-size:12px;text-align:center;">Generated by <strong style="color:#15bd5d;">Gully-Vision AI</strong> &mdash; Bridging Lucknow Maidans to Professional Cricket</p>
+    </td>
+  </tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+  }
+
+  function openOutreachModal(data) {
+    _outreachData = data;
+    if (outreachPlayerSummary) {
+      outreachPlayerSummary.textContent = '';
+      outreachPlayerSummary.appendChild(buildPlayerSummaryDOM(data));
+    }
+    if (outreachEmailInput) outreachEmailInput.value = '';
+    if (outreachEmailError) outreachEmailError.textContent = '';
+    if (outreachEmailInput) outreachEmailInput.classList.remove('input-error');
+    if (previewSendBtn) previewSendBtn.disabled = false;
+    if (previewSendLabel) previewSendLabel.textContent = 'Confirm & Send';
+
+    setModalVisible(outreachModal, true);
+    setTimeout(() => { if (outreachEmailInput) outreachEmailInput.focus(); }, 350);
+  }
+
+  function openPreviewModal(recipientEmail) {
+    const d = _outreachData;
+    _emailSubject = `Scouting Report: ${d.playerName} — ${d.role} | Gully-Vision AI`;
+    _emailHtml    = buildEmailHtml(d);
+
+    if (previewSubject) previewSubject.textContent = _emailSubject;
+    if (previewFrame)   previewFrame.srcdoc = _emailHtml;
+    if (previewSubtitle) previewSubtitle.textContent = `Sending to: ${recipientEmail}`;
+    if (previewSendBtn) previewSendBtn.disabled = false;
+    if (previewSendLabel) previewSendLabel.textContent = 'Confirm & Send';
+
+    setModalVisible(outreachModal, false);
+    setModalVisible(previewModal, true);
+  }
+
+  // Outreach modal bindings
+  if (outreachModalClose) outreachModalClose.addEventListener('click', () => setModalVisible(outreachModal, false));
+  if (outreachCancelBtn)  outreachCancelBtn.addEventListener('click',  () => setModalVisible(outreachModal, false));
+  if (outreachModal) {
+    outreachModal.addEventListener('click', e => { if (e.target === outreachModal) setModalVisible(outreachModal, false); });
+  }
+
+  if (outreachEmailForm) {
+    outreachEmailForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const email = outreachEmailInput ? outreachEmailInput.value.trim() : '';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (outreachEmailError) outreachEmailError.textContent = 'Please enter a valid email address.';
+        if (outreachEmailInput) outreachEmailInput.classList.add('input-error');
+        if (outreachEmailInput) outreachEmailInput.focus();
+        return;
+      }
+      if (outreachEmailError) outreachEmailError.textContent = '';
+      if (outreachEmailInput) outreachEmailInput.classList.remove('input-error');
+      openPreviewModal(email);
+    });
+  }
+
+  if (outreachEmailInput) {
+    outreachEmailInput.addEventListener('input', () => {
+      if (outreachEmailError) outreachEmailError.textContent = '';
+      outreachEmailInput.classList.remove('input-error');
+    });
+  }
+
+  // Preview modal bindings
+  if (previewModalClose) previewModalClose.addEventListener('click', () => setModalVisible(previewModal, false));
+  if (previewModal) {
+    previewModal.addEventListener('click', e => { if (e.target === previewModal) setModalVisible(previewModal, false); });
+  }
+
+  if (previewBackBtn) {
+    previewBackBtn.addEventListener('click', () => {
+      setModalVisible(previewModal, false);
+      setModalVisible(outreachModal, true);
+    });
+  }
+
+  if (previewSendBtn) {
+    previewSendBtn.addEventListener('click', async () => {
+      const recipientEmail = outreachEmailInput ? outreachEmailInput.value.trim() : '';
+      if (!recipientEmail) return;
+
+      previewSendBtn.disabled = true;
+      if (previewSendLabel) previewSendLabel.textContent = 'Sending…';
+
+      try {
+        const res = await fetch('/gully-vision/api/send-outreach.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: recipientEmail, subject: _emailSubject, html: _emailHtml }),
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          // Show success state in the preview frame
+          const successHtml = `<!DOCTYPE html><html><body style="margin:0;padding:40px;text-align:center;font-family:'Segoe UI',Arial,sans-serif;background:#fff;">
+            <div style="font-size:56px;margin-bottom:16px;">&#x2705;</div>
+            <h3 style="margin:0 0 8px;color:#0d1117;font-size:20px;">Email Sent!</h3>
+            <p style="margin:0;color:#57606a;font-size:14px;">Scouting report delivered to <strong>${escHtml(recipientEmail)}</strong></p>
+          </body></html>`;
+          if (previewFrame) previewFrame.srcdoc = successHtml;
+          if (previewSendLabel) previewSendLabel.textContent = 'Sent!';
+          if (previewSubject) previewSubject.textContent = '✓ Delivered to ' + recipientEmail;
+        } else {
+          previewSendBtn.disabled = false;
+          if (previewSendLabel) previewSendLabel.textContent = 'Confirm & Send';
+          alert('Failed to send: ' + (json.error || 'Unknown error'));
+        }
+      } catch (_err) {
+        previewSendBtn.disabled = false;
+        if (previewSendLabel) previewSendLabel.textContent = 'Confirm & Send';
+        alert('Network error. Please try again.');
+      }
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (previewModal && previewModal.classList.contains('active')) setModalVisible(previewModal, false);
+    else if (outreachModal && outreachModal.classList.contains('active')) setModalVisible(outreachModal, false);
+  });
 
   // Apply visual bars for scorecard
   function applyMetricScores(data) {
