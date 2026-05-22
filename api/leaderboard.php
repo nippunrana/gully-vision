@@ -11,8 +11,14 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
     
-    // Fetch top 20 players ordered by overall rating descending
-    $stmt = $pdo->query("SELECT player_name, role, overall_score, technique_name, verdict, scouted_at FROM leaderboard ORDER BY overall_score DESC, scouted_at DESC LIMIT 20");
+    $sort = isset($_GET['sort']) ? $_GET['sort'] : 'rating';
+    $orderBy = "overall_score DESC";
+    if ($sort === 'score') {
+        $orderBy = "total_score DESC";
+    }
+    
+    // Fetch top 20 players ordered by overall rating or total score descending
+    $stmt = $pdo->query("SELECT player_name, role, overall_score, total_score, technique_name, verdict, scouted_at FROM leaderboard ORDER BY $orderBy, scouted_at DESC LIMIT 20");
     $data = $stmt->fetchAll();
     
     echo json_encode($data);

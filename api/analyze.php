@@ -25,24 +25,28 @@ function saveToLeaderboard($output) {
         $techName = isset($resultData['shot_or_delivery_name']['technical']) ? $resultData['shot_or_delivery_name']['technical'] : 'Unknown';
         
         $overallScore = 80;
+        $totalScore = 240;
         if ($role === 'Bowler') {
             $scores = isset($resultData['dashboard_metrics']['bowling_scores']) ? $resultData['dashboard_metrics']['bowling_scores'] : [];
             $runUp = isset($scores['run_up_and_stride']) && $scores['run_up_and_stride'] !== null ? $scores['run_up_and_stride'] : 80;
             $armSpeed = isset($scores['release_arm_speed']) && $scores['release_arm_speed'] !== null ? $scores['release_arm_speed'] : 80;
             $follow = isset($scores['follow_through']) && $scores['follow_through'] !== null ? $scores['follow_through'] : 80;
             $overallScore = round(($runUp + $armSpeed + $follow) / 3);
+            $totalScore = $runUp + $armSpeed + $follow;
         } else if ($role === 'Fielder') {
             $scores = isset($resultData['dashboard_metrics']['fielding_scores']) ? $resultData['dashboard_metrics']['fielding_scores'] : [];
             $throwing = isset($scores['throwing_accuracy']) && $scores['throwing_accuracy'] !== null ? $scores['throwing_accuracy'] : 80;
             $coverage = isset($scores['ground_coverage']) && $scores['ground_coverage'] !== null ? $scores['ground_coverage'] : 80;
             $catching = isset($scores['catching_technique']) && $scores['catching_technique'] !== null ? $scores['catching_technique'] : 80;
             $overallScore = round(($throwing + $coverage + $catching) / 3);
+            $totalScore = $throwing + $coverage + $catching;
         } else {
             $scores = isset($resultData['dashboard_metrics']['batting_scores']) ? $resultData['dashboard_metrics']['batting_scores'] : [];
             $stance = isset($scores['stance_and_balance']) && $scores['stance_and_balance'] !== null ? $scores['stance_and_balance'] : 80;
             $backlift = isset($scores['backlift_and_swing']) && $scores['backlift_and_swing'] !== null ? $scores['backlift_and_swing'] : 80;
             $execution = isset($scores['footwork_and_execution']) && $scores['footwork_and_execution'] !== null ? $scores['footwork_and_execution'] : 80;
             $overallScore = round(($stance + $backlift + $execution) / 3);
+            $totalScore = $stance + $backlift + $execution;
         }
         
         $verdict = isset($resultData['evaluation_and_feedback']['scouting_summary']) ? $resultData['evaluation_and_feedback']['scouting_summary'] : '';
@@ -53,11 +57,12 @@ function saveToLeaderboard($output) {
             $password = "GullyVision2026Pass";
             $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
             
-            $stmt = $pdo->prepare("INSERT INTO leaderboard (player_name, role, overall_score, technique_name, verdict) VALUES (:player_name, :role, :overall_score, :technique_name, :verdict)");
+            $stmt = $pdo->prepare("INSERT INTO leaderboard (player_name, role, overall_score, total_score, technique_name, verdict) VALUES (:player_name, :role, :overall_score, :total_score, :technique_name, :verdict)");
             $stmt->execute([
                 ':player_name' => $name,
                 ':role' => $role,
                 ':overall_score' => $overallScore,
+                ':total_score' => $totalScore,
                 ':technique_name' => $techName,
                 ':verdict' => $verdict
             ]);

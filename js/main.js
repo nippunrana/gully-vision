@@ -876,6 +876,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const ctaViewDashboard = document.getElementById('cta-view-dashboard');
   const leaderboardSection = document.getElementById('leaderboard-section');
   const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+  const btnRankRating = document.getElementById('rank-by-rating');
+  const btnRankScore = document.getElementById('rank-by-score');
   
   if (ctaViewDashboard) {
     ctaViewDashboard.addEventListener('click', (e) => {
@@ -897,6 +899,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  if (btnRankRating && btnRankScore) {
+    btnRankRating.addEventListener('click', () => {
+      loadLeaderboard('rating');
+    });
+    btnRankScore.addEventListener('click', () => {
+      loadLeaderboard('score');
+    });
+  }
+
   function escapeHtml(str) {
     if (!str) return '';
     return str
@@ -907,8 +918,27 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/'/g, "&#039;");
   }
 
-  function loadLeaderboard() {
-    fetch('api/leaderboard.php')
+  let currentSort = 'rating';
+
+  function loadLeaderboard(sortType) {
+    if (sortType) {
+      currentSort = sortType;
+    }
+    
+    // update buttons state visually
+    const btnRating = document.getElementById('rank-by-rating');
+    const btnScore = document.getElementById('rank-by-score');
+    if (btnRating && btnScore) {
+      if (currentSort === 'rating') {
+        btnRating.classList.add('active');
+        btnScore.classList.remove('active');
+      } else {
+        btnScore.classList.add('active');
+        btnRating.classList.remove('active');
+      }
+    }
+
+    fetch(`api/leaderboard.php?sort=${currentSort}`)
       .then(res => res.json())
       .then(data => {
         const tbody = document.getElementById('leaderboard-rows');
@@ -918,7 +948,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!data || data.length === 0 || data.error) {
           tbody.innerHTML = `
             <tr>
-              <td colspan="6" style="padding: var(--space-6); text-align: center; color: var(--color-text-muted);">No players scouted yet. Be the first to analyze!</td>
+              <td colspan="7" style="padding: var(--space-6); text-align: center; color: var(--color-text-muted);">No players scouted yet. Be the first to analyze!</td>
             </tr>
           `;
           return;
@@ -936,6 +966,7 @@ document.addEventListener('DOMContentLoaded', () => {
           else if (index === 2) medal = '🥉';
           
           const ratingColor = row.overall_score >= 85 ? 'var(--color-green)' : (row.overall_score >= 70 ? 'var(--color-gold)' : 'var(--color-text-secondary)');
+          const scoreColor = row.total_score >= 255 ? 'var(--color-green)' : (row.total_score >= 210 ? 'var(--color-gold)' : 'var(--color-text-secondary)');
           
           tr.innerHTML = `
             <td style="padding: var(--space-4); font-weight: bold; font-size: var(--text-base);">${medal}</td>
@@ -943,6 +974,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td style="padding: var(--space-4);"><span class="badge" style="background: hsla(220, 20%, 20%, 0.6);">${escapeHtml(row.role)}</span></td>
             <td style="padding: var(--space-4); color: var(--color-text-secondary);">${escapeHtml(row.technique_name)}</td>
             <td style="padding: var(--space-4); text-align: right; font-weight: bold; color: ${ratingColor};">${row.overall_score}/100</td>
+            <td style="padding: var(--space-4); text-align: right; font-weight: bold; color: ${scoreColor};">${row.total_score}/300</td>
             <td style="padding: var(--space-4); color: var(--color-text-muted); font-size: var(--text-xs);">${new Date(row.scouted_at).toLocaleDateString()}</td>
           `;
           tbody.appendChild(tr);
