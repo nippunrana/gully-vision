@@ -112,5 +112,7 @@ AI_CONTEXT.md
 # Gully-Vision temporary video uploads
 api/uploads/
 
+temp/*
+CLAUDE.md
 
 

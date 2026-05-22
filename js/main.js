@@ -236,7 +236,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       const type = btn.getAttribute('data-type');
       const videoSrc = btn.getAttribute('data-video');
-      showSelectorView(videoSrc, type);
+      const start = btn.getAttribute('data-start') ? parseFloat(btn.getAttribute('data-start')) : 0;
+      const duration = btn.getAttribute('data-duration') ? parseFloat(btn.getAttribute('data-duration')) : 12;
+      const player = btn.getAttribute('data-player') || '';
+      const category = btn.getAttribute('data-category') || '';
+      showSelectorView(videoSrc, type, start, duration, player, category);
     });
   });
 
@@ -332,17 +336,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Trimmer segment selector helpers
-  function showSelectorView(source, type) {
+  function showSelectorView(source, type, startVal = 0, durationVal = 12, playerName = '', targetCategory = '') {
     loadedSource = source;
     loadedType = type;
-    selectedStart = 0;
-    selectedDuration = 12;
+    selectedStart = parseFloat(startVal);
+    selectedDuration = parseFloat(durationVal);
     
     if (clipDurationSlider) {
-      clipDurationSlider.value = 12;
+      clipDurationSlider.value = selectedDuration;
     }
-    if (clipDurationVal) clipDurationVal.textContent = '12.0s';
-    if (clipDurationDisplay) clipDurationDisplay.textContent = '12.0s';
+    if (clipDurationVal) clipDurationVal.textContent = `${selectedDuration.toFixed(1)}s`;
+    if (clipDurationDisplay) clipDurationDisplay.textContent = `${selectedDuration.toFixed(1)}s`;
+
+    const nameInput = document.getElementById('player-name-input');
+    if (nameInput) {
+      nameInput.value = playerName;
+    }
+    const categorySelect = document.getElementById('analysis-category-select');
+    if (categorySelect && targetCategory) {
+      categorySelect.value = targetCategory;
+    } else if (categorySelect) {
+      categorySelect.value = type;
+    }
 
     // Hide upload tabs and dropzone state
     if (tabLocal && tabLocal.parentNode) tabLocal.parentNode.style.display = 'none';
@@ -371,9 +386,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxStart = Math.max(0, videoDuration - selectedDuration);
         if (clipStartSlider) {
           clipStartSlider.max = maxStart;
-          clipStartSlider.value = 0;
+          clipStartSlider.value = selectedStart;
         }
-        updateRangeDisplay(0);
+        updateRangeDisplay(selectedStart);
         startYTLoopChecker(player);
       });
       
@@ -381,9 +396,9 @@ document.addEventListener('DOMContentLoaded', () => {
         videoDuration = 60;
         if (clipStartSlider) {
           clipStartSlider.max = Math.max(0, videoDuration - selectedDuration);
-          clipStartSlider.value = 0;
+          clipStartSlider.value = selectedStart;
         }
-        updateRangeDisplay(0);
+        updateRangeDisplay(selectedStart);
       }
     } else {
       if (selectorVideoPreview) selectorVideoPreview.style.display = 'block';
@@ -400,9 +415,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const maxStart = Math.max(0, videoDuration - selectedDuration);
           if (clipStartSlider) {
             clipStartSlider.max = maxStart;
-            clipStartSlider.value = 0;
+            clipStartSlider.value = selectedStart;
           }
-          updateRangeDisplay(0);
+          updateRangeDisplay(selectedStart);
         };
         
         selectorVideoPreview.play().catch(() => {});
@@ -497,6 +512,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (clipDurationVal) clipDurationVal.textContent = '12.0s';
     if (clipDurationDisplay) clipDurationDisplay.textContent = '12.0s';
+
+    const nameInput = document.getElementById('player-name-input');
+    if (nameInput) nameInput.value = '';
+    const categorySelect = document.getElementById('analysis-category-select');
+    if (categorySelect) categorySelect.value = 'batting';
 
     if (analysisDashboard) analysisDashboard.style.display = 'none';
     if (scoutFlow) {
