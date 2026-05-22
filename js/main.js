@@ -4,6 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.getElementById('file-input');
   const uploadCard = document.getElementById('upload-card');
   
+  // Tab Switcher Elements
+  const tabLocal = document.getElementById('tab-local');
+  const tabYoutube = document.getElementById('tab-youtube');
+  const localContainer = document.getElementById('local-container');
+  const youtubeContainer = document.getElementById('youtube-container');
+  const youtubeForm = document.getElementById('youtube-form');
+  const youtubeUrlInput = document.getElementById('youtube-url-input');
+
   // Flow States
   const dropzoneState = document.getElementById('dropzone-state');
   const scoutFlow = document.getElementById('scout-flow');
@@ -31,67 +39,77 @@ document.addEventListener('DOMContentLoaded', () => {
   let analysisInterval = null;
   let currentFile = null;
 
-  // Mock Analysis Logs Timeline
-  const battingLogs = [
-    { progress: 5, text: "Initializing Gully-Vision Video Pipeline..." },
-    { progress: 15, text: "Decompressing video frames & synchronizing fps..." },
-    { progress: 28, text: "Running BlazePose: Extracting 33 body coordinate landmarks..." },
-    { progress: 42, text: "Analyzing batting stance stability: Balance index 88%." },
-    { progress: 58, text: "Detecting backlift angle: 78° trajectory. Optimal path match." },
-    { progress: 70, text: "Calculating wrist extension and swing velocity: 94km/h." },
-    { progress: 85, text: "Biomechanical Score calculated. Compiling metrics..." },
-    { progress: 95, text: "Generating scouting summary & academy email pitch draft..." },
-    { progress: 100, text: "Analysis Complete!" }
-  ];
+  // Tab Switching Logic
+  if (tabLocal && tabYoutube) {
+    tabLocal.addEventListener('click', () => {
+      tabLocal.classList.add('active');
+      tabYoutube.classList.remove('active');
+      localContainer.style.display = 'block';
+      youtubeContainer.style.display = 'none';
+      resetToUpload();
+    });
 
-  const bowlingLogs = [
-    { progress: 5, text: "Initializing Gully-Vision Video Pipeline..." },
-    { progress: 15, text: "Loading custom bowling biomechanics neural engine..." },
-    { progress: 28, text: "Running joint-pose estimator. Detecting release arm angle..." },
-    { progress: 45, text: "Measuring approach speed & stride length. Deceleration curve 92%." },
-    { progress: 62, text: "Analyzing release height and follow-through hip alignment..." },
-    { progress: 78, text: "Detecting delivery type: Fast/Medium-Fast Outswing..." },
-    { progress: 90, text: "Scoring seam presentation and wrist snap mechanics..." },
-    { progress: 100, text: "Analysis Complete!" }
-  ];
+    tabYoutube.addEventListener('click', () => {
+      tabYoutube.classList.add('active');
+      tabLocal.classList.remove('active');
+      youtubeContainer.style.display = 'block';
+      localContainer.style.display = 'none';
+      resetToUpload();
+    });
+  }
+
+  // Handle YouTube Form Submit
+  if (youtubeForm) {
+    youtubeForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const url = youtubeUrlInput.value.trim();
+      if (url) {
+        handleYoutubeInput(url);
+      }
+    });
+  }
 
   // Visual Setup - Drag and Drop Listeners
-  ['dragenter', 'dragover'].forEach(eventName => {
-    uploadZone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      uploadZone.classList.add('dragover');
-    }, false);
-  });
+  if (uploadZone) {
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadZone.classList.add('dragover');
+      }, false);
+    });
 
-  ['dragleave', 'drop'].forEach(eventName => {
-    uploadZone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      uploadZone.classList.remove('dragover');
-    }, false);
-  });
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadZone.classList.remove('dragover');
+      }, false);
+    });
 
-  // Handle file drop
-  uploadZone.addEventListener('drop', (e) => {
-    const dt = e.dataTransfer;
-    const files = dt.files;
-    if (files.length > 0) {
-      handleVideoInput(files[0]);
-    }
-  });
+    // Handle file drop
+    uploadZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length > 0) {
+        handleVideoInput(files[0]);
+      }
+    });
 
-  // Handle dropzone click
-  uploadZone.addEventListener('click', () => {
-    fileInput.click();
-  });
+    // Handle dropzone click
+    uploadZone.addEventListener('click', () => {
+      fileInput.click();
+    });
+  }
 
   // Handle file selection
-  fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
-      handleVideoInput(e.target.files[0]);
-    }
-  });
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleVideoInput(e.target.files[0]);
+      }
+    });
+  }
 
   // Handle sample video click
   sampleBtns.forEach(btn => {
@@ -99,16 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const type = btn.getAttribute('data-type');
       const videoSrc = btn.getAttribute('data-video');
       
-      // Load sample video and run simulation
-      showFlowState();
-      videoPreview.src = videoSrc;
-      videoPreview.load();
-      videoPreview.play().catch(() => {
-        // Fallback if autoplay is blocked
-        console.log("Autoplay blocked, running visual scanner anyway.");
-      });
-      
-      startAnalysisSimulation(type);
+      // Let the backend download and process the sample URL
+      startRealAnalysis(videoSrc, type);
     });
   });
 
@@ -119,24 +129,35 @@ document.addEventListener('DOMContentLoaded', () => {
     resetToUpload();
   });
 
-  // Process the video input
+  // Process local file input
   function handleVideoInput(file) {
-    // Validate file type
     if (!file.type.startsWith('video/')) {
       alert('Please upload a valid MP4 or MOV cricket video file.');
       return;
     }
     
     currentFile = file;
-    const objectURL = URL.createObjectURL(file);
     
-    showFlowState();
-    videoPreview.src = objectURL;
-    videoPreview.load();
-    videoPreview.play().catch(() => {});
+    // Auto-detect role based on file name triggers
+    let detectedType = 'batting';
+    const name = file.name.toLowerCase();
+    if (name.includes('bowl') || name.includes('bowling') || name.includes('pitch') || name.includes('delivery')) {
+      detectedType = 'bowling';
+    }
     
-    // Default to batting log sequence
-    startAnalysisSimulation('batting');
+    startRealAnalysis(file, detectedType);
+  }
+
+  // Process YouTube URL input
+  function handleYoutubeInput(url) {
+    // Auto-detect role based on URL contents or prompt triggers
+    let detectedType = 'batting';
+    const checkStr = url.toLowerCase();
+    if (checkStr.includes('bowl') || checkStr.includes('bowling') || checkStr.includes('delivery')) {
+      detectedType = 'bowling';
+    }
+    
+    startRealAnalysis(url, detectedType);
   }
 
   // Visual layout toggles
@@ -159,54 +180,127 @@ document.addEventListener('DOMContentLoaded', () => {
     dropzoneState.style.display = 'block';
     
     // Reset video player
+    videoPreview.style.display = 'block';
     videoPreview.pause();
     videoPreview.src = '';
     
+    // Reset YouTube placeholder
+    const ytPlaceholder = document.getElementById('youtube-preview-placeholder');
+    if (ytPlaceholder) ytPlaceholder.style.display = 'none';
+    
     if (analysisInterval) clearInterval(analysisInterval);
     currentFile = null;
-    fileInput.value = '';
+    if (fileInput) fileInput.value = '';
   }
 
-  // Simulated AI Video Processing
-  function startAnalysisSimulation(type) {
-    const logs = type === 'batting' ? battingLogs : bowlingLogs;
+  // Real API calling and progress bar coordination
+  function startRealAnalysis(source, type) {
+    const isUrl = typeof source === 'string';
+    
+    // Show flow state UI
+    showFlowState();
+    
+    // Setup player view HUD
+    if (isUrl) {
+      // Hide video tag and show nice graphic placeholder for URL stream
+      videoPreview.style.display = 'none';
+      let ytPlaceholder = document.getElementById('youtube-preview-placeholder');
+      if (!ytPlaceholder) {
+        ytPlaceholder = document.createElement('div');
+        ytPlaceholder.id = 'youtube-preview-placeholder';
+        ytPlaceholder.className = 'youtube-preview-placeholder';
+        ytPlaceholder.innerHTML = `
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px; padding: 20px; text-align: center;">
+            <svg fill="currentColor" viewBox="0 0 24 24" width="48" height="48" style="color: #ff0000; filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.45));">
+              <path d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+            <span style="font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--color-text-secondary);">Streaming Video Target</span>
+            <span style="font-family: monospace; font-size: 9px; color: var(--color-text-muted); word-break: break-all;" id="youtube-url-hud-text"></span>
+          </div>
+        `;
+        ytPlaceholder.style.cssText = "position: absolute; inset: 0; background: #000; z-index: 1;";
+        videoPreview.parentNode.appendChild(ytPlaceholder);
+      }
+      ytPlaceholder.style.display = 'block';
+      const hudText = document.getElementById('youtube-url-hud-text');
+      if (hudText) hudText.textContent = source;
+    } else {
+      // Local file preview play
+      videoPreview.style.display = 'block';
+      const ytPlaceholder = document.getElementById('youtube-preview-placeholder');
+      if (ytPlaceholder) ytPlaceholder.style.display = 'none';
+      
+      const objectURL = URL.createObjectURL(source);
+      videoPreview.src = objectURL;
+      videoPreview.load();
+      videoPreview.play().catch(() => {});
+    }
+
+    // Interactive progress logger timeline
     let progress = 0;
     let logIndex = 0;
-    
+    const pipelineLogs = [
+      { progress: 2, text: "Initializing Gully-Vision Video Pipeline..." },
+      { progress: 10, text: "Routing request to secure PHP gateway..." },
+      { progress: 20, text: isUrl ? "Downloading remote video stream payload..." : "Uploading local media chunks to Google File API..." },
+      { progress: 38, text: "Verifying video format metadata & duration..." },
+      { progress: 50, text: "Spawning Gemini 3.5 Flash Scouting Agent..." },
+      { progress: 65, text: "Extracting biomechanical joint tracking landmarks..." },
+      { progress: 80, text: "Calculating techniques & execution percentages..." },
+      { progress: 90, text: "Drafting selector outreach pitches & compilation..." }
+    ];
+
     progressBarFill.style.width = '0%';
     progressPct.textContent = '0%';
-
-    // Add first log
-    appendLog(logs[0].text, true);
+    appendLog(pipelineLogs[0].text, true);
     logIndex++;
-    
-    const intervalTime = 40; // Total duration approx 4 seconds (100 * 40ms)
-    
+
+    // Increment progress bar up to 95% gradually
     analysisInterval = setInterval(() => {
-      progress += 1;
-      
-      // Cap at 100
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(analysisInterval);
+      if (progress < 95) {
+        const increment = progress < 40 ? 2 : (progress < 75 ? 1 : 0.2);
+        progress += increment;
+        if (progress > 95) progress = 95;
         
-        // Finalize state
-        setTimeout(() => {
-          showResults(type);
-        }, 800);
+        const roundedProgress = Math.floor(progress);
+        progressBarFill.style.width = `${roundedProgress}%`;
+        progressPct.textContent = `${roundedProgress}%`;
+        
+        if (logIndex < pipelineLogs.length && roundedProgress >= pipelineLogs[logIndex].progress) {
+          const log = pipelineLogs[logIndex];
+          const isHighlight = log.progress === 50 || log.progress === 80;
+          appendLog(log.text, isHighlight);
+          logIndex++;
+        }
       }
+    }, 120);
+
+    // Call frontend API client
+    const apiCall = isUrl 
+      ? window.GullyVisionAPI.analyzeYoutubeUrl(source, type)
+      : window.GullyVisionAPI.analyzeVideoFile(source, type);
+
+    apiCall.then((data) => {
+      clearInterval(analysisInterval);
       
-      progressBarFill.style.width = `${progress}%`;
-      progressPct.textContent = `${progress}%`;
+      // Jump progress to completion
+      progressBarFill.style.width = '100%';
+      progressPct.textContent = '100%';
+      appendLog("Analysis Complete! Loading scorecard dashboard...", true);
       
-      // Check if we need to print a new log
-      if (logIndex < logs.length && progress >= logs[logIndex].progress) {
-        const log = logs[logIndex];
-        const isHighlight = log.progress === 100 || log.progress === 5 || log.progress === 85;
-        appendLog(log.text, isHighlight);
-        logIndex++;
-      }
-    }, intervalTime);
+      setTimeout(() => {
+        showRealResults(data);
+      }, 700);
+    }).catch((err) => {
+      clearInterval(analysisInterval);
+      progressBarFill.style.width = '0%';
+      progressPct.textContent = '0%';
+      appendLog(`Error: ${err.message || 'Analysis processing failed.'}`, false);
+      appendLog("Verify your .env API credentials and try again.", true);
+      
+      alert(`Scouting Pipeline Error:\n${err.message || 'Check network connection and server settings.'}`);
+      resetToUpload();
+    });
   }
 
   // Helper to add lines to hud logs
@@ -220,40 +314,84 @@ document.addEventListener('DOMContentLoaded', () => {
     logContainer.scrollTop = logContainer.scrollHeight;
   }
 
-  // Display resulting scorecard
-  function showResults(type) {
+  // Display resulting scorecard from real API response
+  function showRealResults(data) {
     scoutFlow.classList.remove('analyzing');
     scoutFlow.classList.remove('active');
     scoutResults.classList.add('active');
     
-    if (type === 'batting') {
-      resultTitle.textContent = "Batting Technique Profile";
-      resultScore.textContent = "84/100";
+    // Handle error returned in JSON payload
+    if (data.error) {
+      resultTitle.textContent = "Analysis Error";
+      resultScore.textContent = "--/100";
+      verdictStrong.textContent = "Error occurred during analysis.";
+      verdictText.textContent = data.error;
+      applyMetricScores([
+        { label: "Stance & Balance", score: 0 },
+        { label: "Backlift & Swing", score: 0 },
+        { label: "Execution Accuracy", score: 0 }
+      ]);
+      return;
+    }
+
+    const role = (data.scouted_player && data.scouted_player.role) || 'Batter';
+    const playerName = (data.scouted_player && data.scouted_player.name) || 'Grassroots Prospect';
+    const techName = (data.shot_or_delivery_name && data.shot_or_delivery_name.technical) || 'Unknown';
+    const colloquialName = (data.shot_or_delivery_name && data.shot_or_delivery_name.colloquial) || 'Unknown';
+    
+    let metrics = [];
+    let title = "";
+    let overallScore = 0;
+    
+    if (role === 'Bowler') {
+      title = "Bowling Action Profile";
+      const bowlingScores = (data.dashboard_metrics && data.dashboard_metrics.bowling_scores) || {};
+      const runUp = bowlingScores.run_up_and_stride !== null ? bowlingScores.run_up_and_stride : 80;
+      const armSpeed = bowlingScores.release_arm_speed !== null ? bowlingScores.release_arm_speed : 80;
+      const follow = bowlingScores.follow_through !== null ? bowlingScores.follow_through : 80;
       
-      const battingData = [
-        { label: "Stance & Balance", score: 88 },
-        { label: "Backlift & Swing", score: 82 },
-        { label: "Footwork & Execution", score: 83 }
+      metrics = [
+        { label: "Run-up & Stride", score: runUp },
+        { label: "Release Arm Speed", score: armSpeed },
+        { label: "Follow-through", score: follow }
       ];
-      
-      applyMetricScores(battingData);
-      
-      verdictStrong.textContent = "Elite Cover Drive execution detected.";
-      verdictText.textContent = "Excellent head positioning and foot movement. Stance holds optimal balance through contact point. Suggest pitching to UPCA academy trainers.";
+      overallScore = Math.round((runUp + armSpeed + follow) / 3);
     } else {
-      resultTitle.textContent = "Bowling Action Profile";
-      resultScore.textContent = "81/100";
+      title = "Batting Technique Profile";
+      const battingScores = (data.dashboard_metrics && data.dashboard_metrics.batting_scores) || {};
+      const stance = battingScores.stance_and_balance !== null ? battingScores.stance_and_balance : 80;
+      const backlift = battingScores.backlift_and_swing !== null ? battingScores.backlift_and_swing : 80;
+      const execution = battingScores.footwork_and_execution !== null ? battingScores.footwork_and_execution : 80;
       
-      const bowlingData = [
-        { label: "Run-up & Stride", score: 79 },
-        { label: "Release Arm Speed", score: 85 },
-        { label: "Follow-through", score: 80 }
+      metrics = [
+        { label: "Stance & Balance", score: stance },
+        { label: "Backlift & Swing", score: backlift },
+        { label: "Footwork & Execution", score: execution }
       ];
-      
-      applyMetricScores(bowlingData);
-      
-      verdictStrong.textContent = "Consistent Outswing delivery path.";
-      verdictText.textContent = "High release point with good wrist rotation and front-foot stability. Recommended development in seam position under specialized coaching.";
+      overallScore = Math.round((stance + backlift + execution) / 3);
+    }
+    
+    resultTitle.textContent = title;
+    resultScore.textContent = `${overallScore}/100`;
+    
+    applyMetricScores(metrics);
+    
+    verdictStrong.textContent = `${techName} (${colloquialName}) detected.`;
+    
+    const feedback = data.evaluation_and_feedback || {};
+    const summary = feedback.scouting_summary || 'Analysis completed successfully.';
+    const suggestion = feedback.actionable_suggestion || '';
+    verdictText.textContent = `${summary} ${suggestion}`;
+    
+    // Bind outreach button to pitch hook dynamically
+    const outreachBtn = document.getElementById('outreach-btn');
+    if (outreachBtn) {
+      outreachBtn.removeAttribute('onclick');
+      outreachBtn.onclick = () => {
+        const pitchHook = feedback.outreach_pitch_hook || 'Elite technique spotted in Lucknow nets.';
+        const emailBody = `Respected Selectors,\n\nI would like to recommend ${playerName} for your review. Biomechanical scouting results:\n\nRole: ${role}\nAction: ${techName} (${colloquialName})\nOverall Rating: ${overallScore}/100\n\nScout Pitch:\n"${pitchHook}"\n\nRegards,\nGully-Vision Agent`;
+        alert(`Selector Outreach Triggered!\n\nPitch Hook Sent:\n"${pitchHook}"\n\nDraft Email Content:\n\n${emailBody}`);
+      };
     }
   }
 
@@ -275,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
   // Mobile Menu Toggle
   if (mobileToggle && navMenu) {
     mobileToggle.addEventListener('click', () => {
@@ -282,3 +421,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+

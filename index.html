@@ -97,17 +97,52 @@
       <section class="hero__scout" id="hero-scout-column">
         <div class="upload-card" id="upload-card">
           
-          <!-- State 1: Dropzone Active (Default) -->
+          <!-- Tab Navigation -->
+          <div class="upload-tabs" id="upload-tabs">
+            <button class="upload-tab active" id="tab-local" data-target="local-container">Local Video</button>
+            <button class="upload-tab" id="tab-youtube" data-target="youtube-container">YouTube Link</button>
+          </div>
+
+          <!-- State 1: Dropzone/URL Input Active (Default) -->
           <div id="dropzone-state">
-            <div class="upload-zone" id="upload-zone" role="button" aria-label="Upload video for analysis" tabindex="0">
-              <div class="upload-zone__icon-container">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                </svg>
+            
+            <!-- Local File Upload Container -->
+            <div id="local-container">
+              <div class="upload-zone" id="upload-zone" role="button" aria-label="Upload video for analysis" tabindex="0">
+                <div class="upload-zone__icon-container">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                  </svg>
+                </div>
+                <h3 class="upload-zone__title">Drag & Drop Practice Video</h3>
+                <p class="upload-zone__subtitle">Supports MP4, MOV. Max length 12 seconds for optimal analysis.</p>
+                <input type="file" id="file-input" class="upload-zone__file-input" accept="video/mp4, video/quicktime">
               </div>
-              <h3 class="upload-zone__title">Drag & Drop Practice Video</h3>
-              <p class="upload-zone__subtitle">Supports MP4, MOV. Max length 12 seconds for optimal analysis.</p>
-              <input type="file" id="file-input" class="upload-zone__file-input" accept="video/mp4, video/quicktime">
+            </div>
+
+            <!-- YouTube Link Form Container -->
+            <div id="youtube-container" style="display: none;">
+              <form id="youtube-form" class="youtube-form-element">
+                <div class="youtube-input-wrapper">
+                  <div class="youtube-icon-container">
+                    <svg fill="currentColor" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true" style="color: #ff0000; filter: drop-shadow(0 0 8px rgba(255,0,0,0.5));">
+                      <path d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </div>
+                  <h3 class="upload-zone__title">Analyze YouTube Performance</h3>
+                  <p class="upload-zone__subtitle">Paste a YouTube video link of your batting or bowling action.</p>
+                  
+                  <div class="youtube-field-group" style="width: 100%;">
+                    <input type="url" id="youtube-url-input" class="youtube-input" placeholder="https://www.youtube.com/watch?v=..." required>
+                    <button type="submit" class="btn btn--primary" id="youtube-submit-btn" style="width: 100%; margin-top: var(--space-3);">
+                      <span>Analyze YouTube Video</span>
+                      <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
             
             <!-- Interactive Pre-loaded Samples -->
@@ -233,6 +268,7 @@
     </div>
   </main>
 
+  <script src="js/api.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
