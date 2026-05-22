@@ -508,6 +508,76 @@
     </div>
   </section>
 
+  <!-- How It Works Modal -->
+  <div class="modal-overlay" id="how-it-works-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-container">
+      <button class="modal-close" id="modal-close-btn" aria-label="Close Modal">
+        <svg fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+        </svg>
+      </button>
+      
+      <div class="modal-header">
+        <div class="modal-badge-wrapper">
+          <span class="modal-badge">Technology Overview</span>
+        </div>
+        <h2 id="modal-title" class="modal-title">How Gully-Vision Works</h2>
+        <p class="modal-subtitle">AI-powered technique tracking that bridges the gap between Lucknow maidans and professional cricket pathways.</p>
+      </div>
+      
+      <div class="modal-steps">
+        <div class="modal-step">
+          <div class="modal-step__num">1</div>
+          <div class="modal-step__icon-box">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="28" height="28">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+          </div>
+          <h3 class="modal-step__title">Upload & Input</h3>
+          <p class="modal-step__desc">Upload your batting/bowling/fielding video (MP4/MOV) or paste a YouTube performance link directly.</p>
+        </div>
+        
+        <div class="modal-step">
+          <div class="modal-step__num">2</div>
+          <div class="modal-step__icon-box">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="28" height="28">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </div>
+          <h3 class="modal-step__title">Target the Window</h3>
+          <p class="modal-step__desc">Use the interactive slider to select a key 12-second scouting window covering the setup, release, or impact point.</p>
+        </div>
+        
+        <div class="modal-step">
+          <div class="modal-step__num">3</div>
+          <div class="modal-step__icon-box">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="28" height="28">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h3 class="modal-step__title">AI Analysis</h3>
+          <p class="modal-step__desc">Gemini 3.5 Flash processes the footage, executing multi-point tracking on joints, head positions, and swing velocities.</p>
+        </div>
+        
+        <div class="modal-step">
+          <div class="modal-step__num">4</div>
+          <div class="modal-step__icon-box">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="28" height="28">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+            </svg>
+          </div>
+          <h3 class="modal-step__title">Get Scouted</h3>
+          <p class="modal-step__desc">View detailed telemetry charts, receive a custom UPCA selector scouting pitch, and claim your spot on the live leaderboard.</p>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn--primary" id="modal-cta-btn">Start Scouting Now</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://www.youtube.com/iframe_api"></script>
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>

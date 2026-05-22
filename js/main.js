@@ -1012,6 +1012,80 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
+  // How It Works Modal Logic
+  const navLinkHow = document.getElementById('nav-link-how');
+  const howItWorksModal = document.getElementById('how-it-works-modal');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
+  const modalCtaBtn = document.getElementById('modal-cta-btn');
+
+  function openHowItWorksModal(e) {
+    if (e) e.preventDefault();
+    
+    // Close mobile menu if open
+    if (navMenu) {
+      navMenu.classList.remove('nav__menu--open');
+    }
+    
+    if (howItWorksModal) {
+      howItWorksModal.classList.add('active');
+      howItWorksModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('body-no-scroll');
+      
+      const closeBtn = document.getElementById('modal-close-btn');
+      if (closeBtn) closeBtn.focus();
+    }
+  }
+
+  function closeHowItWorksModal() {
+    if (howItWorksModal) {
+      howItWorksModal.classList.remove('active');
+      howItWorksModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('body-no-scroll');
+      
+      if (navLinkHow) navLinkHow.focus();
+    }
+  }
+
+  if (navLinkHow) {
+    navLinkHow.addEventListener('click', openHowItWorksModal);
+  }
+
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener('click', closeHowItWorksModal);
+  }
+
+  if (howItWorksModal) {
+    howItWorksModal.addEventListener('click', (e) => {
+      if (e.target === howItWorksModal) {
+        closeHowItWorksModal();
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && howItWorksModal && howItWorksModal.classList.contains('active')) {
+      closeHowItWorksModal();
+    }
+  });
+
+  if (modalCtaBtn) {
+    modalCtaBtn.addEventListener('click', () => {
+      closeHowItWorksModal();
+      const uploadZoneElement = document.getElementById('upload-card');
+      if (uploadZoneElement) {
+        uploadZoneElement.scrollIntoView({ behavior: 'smooth' });
+        const dropzone = document.getElementById('upload-zone');
+        if (dropzone) {
+          dropzone.focus();
+          dropzone.style.borderColor = 'var(--color-gold)';
+          setTimeout(() => {
+            dropzone.style.borderColor = '';
+          }, 1500);
+        }
+      }
+    });
+  }
+
   // Pre-load the leaderboard structure
   loadLeaderboard();
 });
