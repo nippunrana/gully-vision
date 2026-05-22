@@ -59,7 +59,11 @@ if (isset($_POST['youtube_url']) && !empty(trim($_POST['youtube_url']))) {
         // Execute Node CLI script with local video path
         $escapedPath = escapeshellarg($tempFilePath);
         $escapedType = escapeshellarg($analysisType);
-        $command = "node " . __DIR__ . "/analyze.js --video={$escapedPath} --type={$escapedType} 2>&1";
+        $errorLog = __DIR__ . '/uploads/error.log';
+        if (file_exists($errorLog)) {
+            unlink($errorLog);
+        }
+        $command = "node " . __DIR__ . "/analyze.js --video={$escapedPath} --type={$escapedType} 2>" . escapeshellarg($errorLog);
         
         $output = shell_exec($command);
         
@@ -68,9 +72,14 @@ if (isset($_POST['youtube_url']) && !empty(trim($_POST['youtube_url']))) {
             unlink($tempFilePath);
         }
         
-        if ($output === null) {
+        $decoded = json_decode($output, true);
+        if ($decoded === null) {
+            $stderr = file_exists($errorLog) ? file_get_contents($errorLog) : '';
             http_response_code(500);
-            echo json_encode(['error' => 'Failed to execute analysis script on remote video.']);
+            echo json_encode([
+                'error' => 'Failed to execute analysis script on remote video.',
+                'details' => $output ? $output : $stderr
+            ]);
             exit;
         }
         
@@ -81,16 +90,24 @@ if (isset($_POST['youtube_url']) && !empty(trim($_POST['youtube_url']))) {
     // Escape argument for CLI execution
     $escapedUrl = escapeshellarg($youtubeUrl);
     $escapedType = escapeshellarg($analysisType);
+    $errorLog = __DIR__ . '/uploads/error.log';
+    if (file_exists($errorLog)) {
+        unlink($errorLog);
+    }
     
     // Execute Node CLI script for YouTube URL
-    $command = "node " . __DIR__ . "/analyze.js --youtube={$escapedUrl} --type={$escapedType} 2>&1";
+    $command = "node " . __DIR__ . "/analyze.js --youtube={$escapedUrl} --type={$escapedType} 2>" . escapeshellarg($errorLog);
     
     $output = shell_exec($command);
     
-    // Parse output
-    if ($output === null) {
+    $decoded = json_decode($output, true);
+    if ($decoded === null) {
+        $stderr = file_exists($errorLog) ? file_get_contents($errorLog) : '';
         http_response_code(500);
-        echo json_encode(['error' => 'Failed to execute analysis script.']);
+        echo json_encode([
+            'error' => 'Failed to execute analysis script for YouTube URL.',
+            'details' => $output ? $output : $stderr
+        ]);
         exit;
     }
     
@@ -155,7 +172,11 @@ if (isset($_FILES['video'])) {
     // Escape path and run CLI execution
     $escapedPath = escapeshellarg($tempFilePath);
     $escapedType = escapeshellarg($analysisType);
-    $command = "node " . __DIR__ . "/analyze.js --video={$escapedPath} --type={$escapedType} 2>&1";
+    $errorLog = __DIR__ . '/uploads/error.log';
+    if (file_exists($errorLog)) {
+        unlink($errorLog);
+    }
+    $command = "node " . __DIR__ . "/analyze.js --video={$escapedPath} --type={$escapedType} 2>" . escapeshellarg($errorLog);
     
     $output = shell_exec($command);
     
@@ -164,9 +185,14 @@ if (isset($_FILES['video'])) {
         unlink($tempFilePath);
     }
     
-    if ($output === null) {
+    $decoded = json_decode($output, true);
+    if ($decoded === null) {
+        $stderr = file_exists($errorLog) ? file_get_contents($errorLog) : '';
         http_response_code(500);
-        echo json_encode(['error' => 'Failed to execute analysis script.']);
+        echo json_encode([
+            'error' => 'Failed to execute analysis script for uploaded file.',
+            'details' => $output ? $output : $stderr
+        ]);
         exit;
     }
     

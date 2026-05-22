@@ -1,7 +1,9 @@
 import { GoogleGenAI, createUserContent, createPartFromUri } from "@google/genai";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import "dotenv/config";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.join(import.meta.dirname, "..", ".env"), quiet: true });
 
 // Retrieve arguments
 const args = {};
@@ -154,6 +156,7 @@ async function run() {
       const contents = [
         {
           fileData: {
+            mimeType: "video/mp4",
             fileUri: youtubeUrl,
           },
         },
