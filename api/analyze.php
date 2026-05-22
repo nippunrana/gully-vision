@@ -57,14 +57,15 @@ function saveToLeaderboard($output) {
             $password = "GullyVision2026Pass";
             $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
             
-            $stmt = $pdo->prepare("INSERT INTO leaderboard (player_name, role, overall_score, total_score, technique_name, verdict) VALUES (:player_name, :role, :overall_score, :total_score, :technique_name, :verdict)");
+            $stmt = $pdo->prepare("INSERT INTO leaderboard (player_name, role, overall_score, total_score, technique_name, verdict, raw_analysis) VALUES (:player_name, :role, :overall_score, :total_score, :technique_name, :verdict, :raw_analysis)");
             $stmt->execute([
                 ':player_name' => $name,
                 ':role' => $role,
                 ':overall_score' => $overallScore,
                 ':total_score' => $totalScore,
                 ':technique_name' => $techName,
-                ':verdict' => $verdict
+                ':verdict' => $verdict,
+                ':raw_analysis' => $output
             ]);
         } catch (PDOException $dbEx) {
             // Silently ignore or log connection/write failure to not disrupt flow

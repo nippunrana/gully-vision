@@ -1533,5 +1533,17 @@ a {
   background: hsla(220, 20%, 12%, 0.4);
 }
 
+.player-name-link {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px dashed transparent;
+}
+
+.player-name-link:hover {
+  color: var(--color-green) !important;
+  border-bottom-color: var(--color-green);
+}
+
+
 
 

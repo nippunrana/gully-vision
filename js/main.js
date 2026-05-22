@@ -686,6 +686,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Display resulting scorecard from real API response
   function showRealResults(data) {
+    if (analysisDashboard) {
+      analysisDashboard.style.display = 'block';
+    }
     if (scoutFlow) {
       scoutFlow.style.display = 'none';
       scoutFlow.classList.remove('analyzing');
@@ -883,7 +886,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ctaViewDashboard.addEventListener('click', (e) => {
       e.preventDefault();
       if (leaderboardSection) {
-        leaderboardSection.style.display = 'block';
         loadLeaderboard();
         leaderboardSection.scrollIntoView({ behavior: 'smooth' });
       }
@@ -893,9 +895,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (closeLeaderboardBtn) {
     closeLeaderboardBtn.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => {
-        if (leaderboardSection) leaderboardSection.style.display = 'none';
-      }, 600);
     });
   }
 
@@ -916,6 +915,24 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  function viewPlayerAnalysis(playerId) {
+    fetch(`api/leaderboard.php?player_id=${playerId}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Detailed analysis data is not available for this prospect.");
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data) {
+          showRealResults(data);
+        }
+      })
+      .catch(err => {
+        alert(err.message || "Failed to load player analysis.");
+      });
   }
 
   let currentSort = 'rating';
@@ -968,9 +985,11 @@ document.addEventListener('DOMContentLoaded', () => {
           const ratingColor = row.overall_score >= 85 ? 'var(--color-green)' : (row.overall_score >= 70 ? 'var(--color-gold)' : 'var(--color-text-secondary)');
           const scoreColor = row.total_score >= 255 ? 'var(--color-green)' : (row.total_score >= 210 ? 'var(--color-gold)' : 'var(--color-text-secondary)');
           
+          const nameHtml = `<span class="player-name-link">${escapeHtml(row.player_name)}</span>`;
+          
           tr.innerHTML = `
             <td style="padding: var(--space-4); font-weight: bold; font-size: var(--text-base);">${medal}</td>
-            <td style="padding: var(--space-4); font-weight: 600;">${escapeHtml(row.player_name)}</td>
+            <td style="padding: var(--space-4); font-weight: 600;">${nameHtml}</td>
             <td style="padding: var(--space-4);"><span class="badge" style="background: hsla(220, 20%, 20%, 0.6);">${escapeHtml(row.role)}</span></td>
             <td style="padding: var(--space-4); color: var(--color-text-secondary);">${escapeHtml(row.technique_name)}</td>
             <td style="padding: var(--space-4); text-align: right; font-weight: bold; color: ${ratingColor};">${row.overall_score}/100</td>
@@ -978,6 +997,14 @@ document.addEventListener('DOMContentLoaded', () => {
             <td style="padding: var(--space-4); color: var(--color-text-muted); font-size: var(--text-xs);">${new Date(row.scouted_at).toLocaleDateString()}</td>
           `;
           tbody.appendChild(tr);
+          
+          const playerLink = tr.querySelector('.player-name-link');
+          if (playerLink) {
+            playerLink.addEventListener('click', (e) => {
+              e.preventDefault();
+              viewPlayerAnalysis(row.id);
+            });
+          }
         });
       })
       .catch(err => {

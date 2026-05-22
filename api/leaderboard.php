@@ -11,14 +11,28 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
     
+    // Single player detailed analysis retrieval
+    if (isset($_GET['player_id'])) {
+        $stmt = $pdo->prepare("SELECT raw_analysis FROM leaderboard WHERE id = :id");
+        $stmt->execute([':id' => intval($_GET['player_id'])]);
+        $row = $stmt->fetch();
+        if ($row && !empty($row['raw_analysis'])) {
+            echo $row['raw_analysis'];
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Detailed analysis data is not available for this prospect.']);
+        }
+        exit;
+    }
+    
     $sort = isset($_GET['sort']) ? $_GET['sort'] : 'rating';
     $orderBy = "overall_score DESC";
     if ($sort === 'score') {
         $orderBy = "total_score DESC";
     }
     
-    // Fetch top 20 players ordered by overall rating or total score descending
-    $stmt = $pdo->query("SELECT player_name, role, overall_score, total_score, technique_name, verdict, scouted_at FROM leaderboard ORDER BY $orderBy, scouted_at DESC LIMIT 20");
+    // Fetch top 20 players ordered by overall rating or total score descending, including id
+    $stmt = $pdo->query("SELECT id, player_name, role, overall_score, total_score, technique_name, verdict, scouted_at FROM leaderboard ORDER BY $orderBy, scouted_at DESC LIMIT 20");
     $data = $stmt->fetchAll();
     
     echo json_encode($data);
