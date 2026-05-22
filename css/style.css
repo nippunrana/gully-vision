@@ -254,10 +254,10 @@ a {
 .hero {
   position: relative;
   z-index: 10;
-  min-height: 100vh;
+  min-height: clamp(680px, 75vh, 900px);
   display: flex;
   align-items: center;
-  padding: 120px var(--space-6) 60px;
+  padding: 100px var(--space-6) 45px;
   max-width: 1280px;
   margin: 0 auto;
 }
@@ -274,7 +274,7 @@ a {
 .hero__content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-4);
 }
 
 .hero__badge {
@@ -384,12 +384,12 @@ a {
 }
 
 .hero__trust {
-  margin-top: var(--space-6);
-  padding-top: var(--space-6);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
   border-top: 1px solid var(--color-border-glass);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .hero__trust-label {
@@ -435,7 +435,7 @@ a {
   background: var(--color-surface-glass);
   border: 1px solid var(--color-border-glass);
   border-radius: var(--radius-lg);
-  padding: var(--space-6);
+  padding: var(--space-5);
   box-shadow: 
     0 20px 40px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 hsla(0, 0%, 100%, 0.1);
@@ -445,7 +445,7 @@ a {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 
 .upload-card::before {
@@ -466,7 +466,7 @@ a {
   z-index: 1;
   border: 2px dashed var(--color-border-glass-highlight);
   border-radius: var(--radius-md);
-  padding: var(--space-8) var(--space-4);
+  padding: var(--space-6) var(--space-4);
   text-align: center;
   cursor: pointer;
   background: hsla(224, 25%, 3%, 0.4);
@@ -475,7 +475,7 @@ a {
   flex-direction: column;
   align-items: center;
   gap: var(--space-3);
-  min-height: 240px;
+  min-height: 200px;
   justify-content: center;
 }
 
@@ -535,7 +535,7 @@ a {
   position: relative;
   z-index: 1;
   border-top: 1px solid var(--color-border-glass);
-  padding-top: var(--space-4);
+  padding-top: var(--space-3);
 }
 
 .samples__title {
@@ -544,7 +544,7 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1109,10 +1109,10 @@ a {
   z-index: 1;
   border: 2px dashed var(--color-border-glass-highlight);
   border-radius: var(--radius-md);
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-5) var(--space-4);
   background: hsla(224, 25%, 3%, 0.4);
   transition: all 0.3s ease;
-  min-height: 240px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: center;
