@@ -102,3 +102,11 @@ Thumbs.db
 
 # Agent directory
 .agent/
+
+# Project Secrets
+api/config.php
+
+# AI Context
+AI_CONTEXT.md
+
+
